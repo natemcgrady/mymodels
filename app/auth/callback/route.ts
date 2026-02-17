@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { toHighResAvatarUrl } from '@/lib/profile-utils'
 import { ensureProfileForUser, getUsernameHintFromMetadata } from '@/server/data/profiles'
 
 function getIdentityUsername(
@@ -57,7 +58,7 @@ export async function GET(request: Request) {
           (data.user.user_metadata?.name as string) ??
           data.user.email ??
           null,
-        avatarUrl: (data.user.user_metadata?.avatar_url as string) ?? null,
+        avatarUrl: toHighResAvatarUrl(data.user.user_metadata?.avatar_url as string) ?? null,
         githubUsername: getIdentityUsername(identities, 'github'),
         twitterUsername: getIdentityUsername(identities, 'x') ?? getIdentityUsername(identities, 'twitter'),
       })
