@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Providers } from './providers'
 import { Toaster } from '@/components/ui/sonner'
-import { SiteHeader } from '@/components/layout/site-header'
+import { SiteHeader } from '@/components/site-header'
 import { GeistSans } from 'geist/font/sans'
 import { GeistPixelSquare } from 'geist/font/pixel'
 

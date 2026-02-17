@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getModelCatalog } from '@/server/data/model-catalog'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
-import { ModelSelectionForm } from '@/components/profile/model-selection-form'
-import { ProfileCard } from '@/components/profile/profile-card'
+import { ModelSelectionForm } from '@/components/model-selection-form'
+import { ProfileCard } from '@/components/profile-card'
 
 export default async function UserProfilePage({
   params,

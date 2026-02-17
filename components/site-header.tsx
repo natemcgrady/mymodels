@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { UserButton } from '@/components/auth/user-button'
+import { UserButton } from '@/components/user-button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export function SiteHeader() {
