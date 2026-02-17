@@ -208,7 +208,6 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       aria-label={`${profile.displayName}'s GitHub profile`}
                     >
                       <Github className="size-3.5 sm:size-4" aria-hidden />
-                      <span>GitHub</span>
                     </a>
                   ) : null}
                   {profile.twitterUrl ? (
@@ -226,7 +225,6 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       >
                         <path d="M18.901 1.153h3.68l-8.04 9.19 9.458 12.504h-7.406l-5.8-7.584-6.64 7.584H.472l8.6-9.826L0 1.153h7.594l5.243 6.932zm-1.292 19.49h2.04L6.486 3.24H4.298z" />
                       </svg>
-                      <span>X</span>
                     </a>
                   ) : null}
                 </div>
