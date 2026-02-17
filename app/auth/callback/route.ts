@@ -59,7 +59,7 @@ export async function GET(request: Request) {
           null,
         avatarUrl: (data.user.user_metadata?.avatar_url as string) ?? null,
         githubUsername: getIdentityUsername(identities, 'github'),
-        twitterUsername: getIdentityUsername(identities, 'twitter'),
+        twitterUsername: getIdentityUsername(identities, 'x') ?? getIdentityUsername(identities, 'twitter'),
       })
       const fallback = profile ? `/${profile.username}` : '/'
       return NextResponse.redirect(`${origin}${next === '/' ? fallback : next}`)
