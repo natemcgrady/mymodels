@@ -34,17 +34,6 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
-    // Log entire OAuth response for debugging X/Twitter user object
-    console.log('[auth/callback] OAuth exchange result:', {
-      hasError: !!error,
-      error: error?.message,
-      user: data?.user ? JSON.stringify(data.user, null, 2) : null,
-      identities: data?.user?.identities,
-      twitterIdentity: (data?.user?.identities ?? []).find(
-        (i: { provider: string }) => i.provider === 'twitter'
-      ),
-    })
-
     if (!error && data.user) {
       const identities = (data.user.identities ?? []) as Array<{
         provider: string
