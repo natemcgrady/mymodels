@@ -7,7 +7,7 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistPixelSquare } from 'geist/font/pixel'
 
 export const metadata: Metadata = {
-  title: 'MyModels.dev',
+  title: 'mymodels.dev',
   description: 'Share the models you use for planning, building, and debugging.',
 }
 

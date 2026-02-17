@@ -9,9 +9,9 @@ export function SiteHeader() {
         <div className="flex items-center gap-6">
           <Link
             href="/"
-            className="font-pixel text-foreground focus-visible:ring-ring text-sm tracking-[0.22em] uppercase transition-opacity hover:opacity-80 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
+            className="font-pixel text-foreground focus-visible:ring-ring text-sm tracking-[0.22em] transition-opacity hover:opacity-80 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
           >
-            MyModels.dev
+            mymodels.dev
           </Link>
         </div>
         <div className="flex items-center gap-2">
