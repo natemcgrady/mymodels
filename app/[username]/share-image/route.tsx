@@ -71,8 +71,22 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         padding: 64,
         fontFamily:
           'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans',
+        position: 'relative',
       }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          top: 32,
+          right: 40,
+          fontSize: 22,
+          fontWeight: 600,
+          color: palette.mutedText,
+          letterSpacing: '0.04em',
+        }}
+      >
+        mymodels.dev
+      </div>
       <div
         style={{
           width: 1180,

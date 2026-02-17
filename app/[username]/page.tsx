@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getMetadataValue } from '@/lib/profile-utils'
 import { getModelCatalog } from '@/server/data/model-catalog'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
 import { ModelSelectionForm } from '@/components/model-selection-form'
@@ -27,26 +26,6 @@ export default async function UserProfilePage({
     data: { user },
   } = await supabase.auth.getUser()
   const canEdit = user?.id === profile.userId
-  const metadata = user?.user_metadata ?? null
-  const githubHandleFromMetadata =
-    getMetadataValue(metadata, 'user_name') ?? getMetadataValue(metadata, 'preferred_username')
-  const githubUrlFromMetadata =
-    getMetadataValue(metadata, 'profile_url') ?? getMetadataValue(metadata, 'html_url')
-  const githubUrl = canEdit
-    ? (githubUrlFromMetadata ??
-      (githubHandleFromMetadata ? `https://github.com/${githubHandleFromMetadata}` : null))
-    : `https://github.com/${profile.username}`
-  const twitterHandleFromMetadata =
-    getMetadataValue(metadata, 'twitter_username') ??
-    getMetadataValue(metadata, 'x_username') ??
-    getMetadataValue(metadata, 'screen_name')
-  const twitterUrlFromMetadata = getMetadataValue(metadata, 'twitter_url')
-  const twitterUrl = canEdit
-    ? (twitterUrlFromMetadata ??
-      (twitterHandleFromMetadata
-        ? `https://x.com/${twitterHandleFromMetadata.replace(/^@+/, '')}`
-        : null))
-    : null
 
   const selections = await getProfileSelections(profile.id)
   const catalog = canEdit ? await getModelCatalog() : []
@@ -71,8 +50,8 @@ export default async function UserProfilePage({
               displayName: profile.displayName,
               username: profile.username,
               image: profile.image,
-              githubUrl,
-              twitterUrl,
+              githubUrl: profile.githubUrl,
+              twitterUrl: profile.twitterUrl,
             }}
             modelSlots={modelSlots}
             modelEditor={

@@ -34,8 +34,8 @@ export function BuildStackHeroSection({
             ?
           </h1>
           <p className="text-muted-foreground max-w-xl text-sm leading-relaxed sm:text-base">
-            Create your model profile and compare against what the community is choosing for
-            planning, implementation, and debugging.
+            Create your model stack profile and share it with your friends and so they always know
+            what models you&apos;re using to plan, build, and debug.
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Link
@@ -43,12 +43,6 @@ export function BuildStackHeroSection({
               className="bg-foreground text-background hover:bg-foreground/90 rounded-md px-4 py-2 text-sm font-medium transition"
             >
               {isLoggedIn ? 'View your profile' : 'Sign in to personalize'}
-            </Link>
-            <Link
-              href="#leaderboard"
-              className="border-border bg-background/70 text-foreground hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium transition"
-            >
-              Browse leaderboard
             </Link>
           </div>
         </div>

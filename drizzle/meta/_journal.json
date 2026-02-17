@@ -15,6 +15,13 @@
       "when": 1771276552664,
       "tag": "0001_overconfident_hitman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771343566377,
+      "tag": "0002_special_grey_gargoyle",
+      "breakpoints": true
     }
   ]
 }

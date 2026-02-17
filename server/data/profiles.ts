@@ -58,15 +58,45 @@ export async function ensureProfileForUser({
   usernameHint,
   displayName,
   avatarUrl,
+  githubUsername,
+  twitterUsername,
 }: {
   userId: string
   usernameHint?: string | null
   displayName?: string | null
   avatarUrl?: string | null
+  githubUsername?: string | null
+  twitterUsername?: string | null
 }) {
   const [existing] = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1)
 
   if (existing) {
+    const updates: Partial<{
+      avatarUrl: string | null
+      displayName: string | null
+      githubUsername: string | null
+      twitterUsername: string | null
+    }> = {}
+    if (avatarUrl && avatarUrl !== existing.avatarUrl) {
+      updates.avatarUrl = avatarUrl
+    }
+    if (displayName && displayName !== existing.displayName) {
+      updates.displayName = displayName
+    }
+    if (githubUsername && githubUsername !== existing.githubUsername) {
+      updates.githubUsername = githubUsername
+    }
+    if (twitterUsername && twitterUsername !== existing.twitterUsername) {
+      updates.twitterUsername = twitterUsername
+    }
+    if (Object.keys(updates).length > 0) {
+      const [updated] = await db
+        .update(profiles)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(profiles.userId, userId))
+        .returning()
+      return updated
+    }
     return existing
   }
 
@@ -78,19 +108,27 @@ export async function ensureProfileForUser({
       username: candidate,
       displayName: displayName ?? null,
       avatarUrl: avatarUrl ?? null,
+      githubUsername: githubUsername ?? null,
+      twitterUsername: twitterUsername ?? null,
     })
     .returning()
   return created
 }
 
-export async function getProfileByUserId(userId: string) {
-  const [row] = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1)
-  if (!row) return null
+function enrichProfile(row: typeof profiles.$inferSelect) {
   return {
     ...row,
     displayName: row.displayName ?? row.username,
     image: row.avatarUrl ?? null,
+    githubUrl: row.githubUsername ? `https://github.com/${row.githubUsername}` : null,
+    twitterUrl: row.twitterUsername ? `https://x.com/${row.twitterUsername}` : null,
   }
+}
+
+export async function getProfileByUserId(userId: string) {
+  const [row] = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1)
+  if (!row) return null
+  return enrichProfile(row)
 }
 
 export async function getProfileByUsername(username: string) {
@@ -103,11 +141,7 @@ export async function getProfileByUsername(username: string) {
     .where(eq(profiles.username, normalizedUsername))
     .limit(1)
   if (!row) return null
-  return {
-    ...row,
-    displayName: row.displayName ?? row.username,
-    image: row.avatarUrl ?? null,
-  }
+  return enrichProfile(row)
 }
 
 export async function getProfileSelections(profileId: number) {
