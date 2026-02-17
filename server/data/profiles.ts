@@ -1,0 +1,173 @@
+import { db } from '@/lib/db'
+import { modelCatalog, profileModelSelections, profiles } from '@/server/db/schema'
+import { and, eq, inArray } from 'drizzle-orm'
+
+const USERNAME_MAX_LENGTH = 40
+const USERNAME_SUFFIX_LIMIT = 100
+
+export function getUsernameHintFromMetadata(
+  metadata: Record<string, unknown> | null
+): string | null {
+  if (!metadata || typeof metadata !== 'object') return null
+  const v = (key: string) => {
+    const val = metadata[key]
+    if (typeof val === 'string' && val.trim()) return val.trim()
+    return null
+  }
+  return v('user_name') ?? v('login') ?? v('preferred_username') ?? v('screen_name') ?? null
+}
+
+function normalizeUsername(input: string) {
+  const slug = input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
+    .slice(0, USERNAME_MAX_LENGTH)
+  return slug.length > 0 ? slug : null
+}
+
+async function isUsernameTaken(username: string) {
+  const [existing] = await db
+    .select({ id: profiles.id })
+    .from(profiles)
+    .where(eq(profiles.username, username))
+    .limit(1)
+  return Boolean(existing)
+}
+
+async function generateAvailableUsername(base: string, userId: string) {
+  const normalizedBase = normalizeUsername(base) ?? `user-${userId.slice(0, 8)}`
+  let candidate = normalizedBase
+  let suffix = 0
+
+  while (await isUsernameTaken(candidate)) {
+    suffix += 1
+    if (suffix > USERNAME_SUFFIX_LIMIT) {
+      candidate = `${normalizedBase}-${Math.random().toString(36).slice(2, 6)}`
+      break
+    }
+    const suffixText = `-${suffix}`
+    const trimmedBase = normalizedBase.slice(0, USERNAME_MAX_LENGTH - suffixText.length)
+    candidate = `${trimmedBase}${suffixText}`
+  }
+  return candidate
+}
+
+export async function ensureProfileForUser({
+  userId,
+  usernameHint,
+  displayName,
+  avatarUrl,
+}: {
+  userId: string
+  usernameHint?: string | null
+  displayName?: string | null
+  avatarUrl?: string | null
+}) {
+  const [existing] = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1)
+
+  if (existing) {
+    return existing
+  }
+
+  const candidate = await generateAvailableUsername(usernameHint ?? userId.slice(0, 8), userId)
+  const [created] = await db
+    .insert(profiles)
+    .values({
+      userId,
+      username: candidate,
+      displayName: displayName ?? null,
+      avatarUrl: avatarUrl ?? null,
+    })
+    .returning()
+  return created
+}
+
+export async function getProfileByUserId(userId: string) {
+  const [row] = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1)
+  if (!row) return null
+  return {
+    ...row,
+    displayName: row.displayName ?? row.username,
+    image: row.avatarUrl ?? null,
+  }
+}
+
+export async function getProfileByUsername(username: string) {
+  const normalizedUsername = username.trim()
+  if (!normalizedUsername) return null
+
+  const [row] = await db
+    .select()
+    .from(profiles)
+    .where(eq(profiles.username, normalizedUsername))
+    .limit(1)
+  if (!row) return null
+  return {
+    ...row,
+    displayName: row.displayName ?? row.username,
+    image: row.avatarUrl ?? null,
+  }
+}
+
+export async function getProfileSelections(profileId: number) {
+  const rows = await db
+    .select({
+      slot: profileModelSelections.slot,
+      model: modelCatalog,
+    })
+    .from(profileModelSelections)
+    .innerJoin(modelCatalog, eq(profileModelSelections.modelId, modelCatalog.id))
+    .where(eq(profileModelSelections.profileId, profileId))
+
+  return rows.reduce<Record<'plan' | 'build' | 'debug', typeof modelCatalog.$inferSelect | null>>(
+    (acc, row) => {
+      acc[row.slot] = row.model
+      return acc
+    },
+    { plan: null, build: null, debug: null }
+  )
+}
+
+export async function upsertProfileSelections({
+  profileId,
+  selections,
+}: {
+  profileId: number
+  selections: Partial<Record<'plan' | 'build' | 'debug', number | null>>
+}) {
+  const requestedIds = Object.values(selections).filter((value): value is number => Boolean(value))
+  if (requestedIds.length > 0) {
+    const rows = await db
+      .select({ id: modelCatalog.id })
+      .from(modelCatalog)
+      .where(inArray(modelCatalog.id, requestedIds))
+    if (rows.length !== new Set(requestedIds).size) {
+      throw new Error('Invalid model selection')
+    }
+  }
+
+  const slots: Array<'plan' | 'build' | 'debug'> = ['plan', 'build', 'debug']
+  for (const slot of slots) {
+    if (!(slot in selections)) continue
+    const modelId = selections[slot]
+    if (!modelId) {
+      await db
+        .delete(profileModelSelections)
+        .where(
+          and(
+            eq(profileModelSelections.profileId, profileId),
+            eq(profileModelSelections.slot, slot)
+          )
+        )
+      continue
+    }
+    await db
+      .insert(profileModelSelections)
+      .values({ profileId, slot, modelId })
+      .onConflictDoUpdate({
+        target: [profileModelSelections.profileId, profileModelSelections.slot],
+        set: { modelId, updatedAt: new Date() },
+      })
+  }
+}
