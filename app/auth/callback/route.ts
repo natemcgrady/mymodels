@@ -9,9 +9,19 @@ function getIdentityUsername(
   const identity = identities.find((i) => i.provider === provider)
   if (!identity?.identity_data) return null
   const data = identity.identity_data
-  const value =
-    (data.user_name as string) ?? (data.preferred_username as string) ?? (data.login as string)
-  return typeof value === 'string' && value.trim() ? value.trim() : null
+  const candidates = [
+    data.user_name,
+    data.preferred_username,
+    data.login,
+    data.screen_name,
+    data.username,
+  ]
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim()
+    }
+  }
+  return null
 }
 
 export async function GET(request: Request) {
