@@ -5,6 +5,7 @@ export const alt = 'mymodels.dev — Share the models you use for planning, buil
 export const size = ogSize
 
 export const contentType = 'image/png'
+export const runtime = 'nodejs'
 
 export default async function Image() {
   return generateOgImage(size)
