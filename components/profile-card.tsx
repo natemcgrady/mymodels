@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Check, ChevronDown, Copy, Loader2, Share2 } from 'lucide-react'
+import { Check, ChevronDown, Copy, Github, Loader2, Share2 } from 'lucide-react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,7 @@ type ProfileCardProps = {
     displayName: string
     username: string
     image: string | null
+    githubUrl?: string | null
   }
   modelSlots: ModelSlot[]
   modelEditor?: ReactNode
@@ -187,6 +188,20 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               <p className="font-pixel text-muted-foreground truncate text-[10px] tracking-[0.14em] uppercase sm:text-[11px] sm:tracking-[0.16em]">
                 @{profile.username}
               </p>
+              {profile.githubUrl ? (
+                <div className="mt-2 flex items-center">
+                  <a
+                    href={profile.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5 rounded-sm text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
+                    aria-label={`${profile.displayName}'s GitHub profile`}
+                  >
+                    <Github className="size-3.5 sm:size-4" aria-hidden />
+                    <span>GitHub</span>
+                  </a>
+                </div>
+              ) : null}
             </div>
           </div>
 

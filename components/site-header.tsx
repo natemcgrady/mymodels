@@ -5,7 +5,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 export function SiteHeader() {
   return (
     <header className="border-border border-b">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
+      <div className="flex w-full items-center justify-between px-6 py-4">
         <div className="flex items-center gap-6">
           <Link
             href="/"
