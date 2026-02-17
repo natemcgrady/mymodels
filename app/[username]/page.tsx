@@ -1,9 +1,65 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getModelCatalog } from '@/server/data/model-catalog'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
 import { ModelSelectionForm } from '@/components/model-selection-form'
 import { ProfileCard } from '@/components/profile-card'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string }>
+}): Promise<Metadata> {
+  const { username } = await params
+  const normalizedUsername = username.trim()
+
+  if (!normalizedUsername) {
+    return {
+      title: 'mymodels.dev',
+    }
+  }
+
+  const profile = await getProfileByUsername(normalizedUsername)
+  if (!profile) {
+    return {
+      title: 'mymodels.dev',
+    }
+  }
+
+  const profilePath = `/${profile.username}`
+  const profileImagePath = `${profilePath}/share-image`
+  const title = `${profile.displayName} (@${profile.username})`
+  const description = `${profile.displayName}'s model stack on mymodels.dev.`
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: profilePath,
+    },
+    openGraph: {
+      type: 'profile',
+      url: profilePath,
+      title,
+      description,
+      images: [
+        {
+          url: profileImagePath,
+          width: 1440,
+          height: 900,
+          alt: `${profile.displayName}'s model stack`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [profileImagePath],
+    },
+  }
+}
 
 export default async function UserProfilePage({
   params,

@@ -7,8 +7,24 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistPixelSquare } from 'geist/font/pixel'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mymodels.dev'),
   title: 'mymodels.dev',
   description: 'Share the models you use for planning, building, and debugging.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/',
+    title: 'mymodels.dev',
+    siteName: 'mymodels.dev',
+    description: 'Share the models you use for planning, building, and debugging.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'mymodels.dev',
+    description: 'Share the models you use for planning, building, and debugging.',
+  },
 }
 
 export default function RootLayout({
