@@ -71,22 +71,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         padding: 64,
         fontFamily:
           'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans',
-        position: 'relative',
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: 32,
-          right: 40,
-          fontSize: 22,
-          fontWeight: 600,
-          color: palette.mutedText,
-          letterSpacing: '0.04em',
-        }}
-      >
-        mymodels.dev
-      </div>
       <div
         style={{
           width: 1180,
@@ -96,8 +82,22 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
           display: 'flex',
           flexDirection: 'column',
           padding: 56,
+          position: 'relative',
         }}
       >
+        <div
+          style={{
+            position: 'absolute',
+            top: 32,
+            right: 40,
+            fontSize: 22,
+            fontWeight: 600,
+            color: palette.mutedText,
+            letterSpacing: '0.04em',
+          }}
+        >
+          mymodels.dev
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
           {avatarSource ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -213,29 +213,42 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
               <div
                 style={{
                   display: 'flex',
+                  flexDirection: 'row',
                   alignItems: 'center',
-                  gap: 16,
+                  justifyContent: 'flex-end',
                   fontSize: 28,
+                  lineHeight: 1,
                   color: palette.text,
                 }}
               >
                 {model ? (
                   <>
                     {getProviderBrand(model.provider)?.logoPath ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={`${origin}${getProviderBrand(model.provider)?.logoPath}`}
-                        alt={model.provider}
-                        width={30}
-                        height={30}
+                      <div
                         style={{
-                          width: 30,
-                          height: 30,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 32,
+                          height: 32,
+                          marginRight: 14,
                           flexShrink: 0,
                         }}
-                      />
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`${origin}${getProviderBrand(model.provider)?.logoPath}`}
+                          alt={model.provider}
+                          width={32}
+                          height={32}
+                          style={{
+                            width: 32,
+                            height: 32,
+                          }}
+                        />
+                      </div>
                     ) : null}
-                    <span>{model.name}</span>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>{model.name}</span>
                   </>
                 ) : (
                   <span style={{ color: palette.mutedText }}>Not selected</span>
