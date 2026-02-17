@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { Check, ChevronDown, Copy, Github, Loader2, Share2 } from 'lucide-react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { getProviderBrand } from '@/lib/provider-brand'
@@ -21,6 +22,7 @@ type ProfileCardProps = {
     username: string
     image: string | null
     githubUrl?: string | null
+    twitterUrl?: string | null
   }
   modelSlots: ModelSlot[]
   modelEditor?: ReactNode
@@ -31,6 +33,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
   const [isCopying, setIsCopying] = useState(false)
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const { resolvedTheme } = useTheme()
 
   const copyAsPng = async () => {
     if (isCopying) {
@@ -38,13 +41,16 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
     }
 
     setIsCopying(true)
-    setIsShareMenuOpen(false)
 
     try {
-      const response = await fetch(`/${profile.username}/share-image?cb=${Date.now()}`, {
-        method: 'GET',
-        cache: 'no-store',
-      })
+      const theme = resolvedTheme === 'light' ? 'light' : 'dark'
+      const response = await fetch(
+        `/${profile.username}/share-image?theme=${theme}&cb=${Date.now()}`,
+        {
+          method: 'GET',
+          cache: 'no-store',
+        }
+      )
       if (!response.ok) {
         throw new Error('Could not render profile card image.')
       }
@@ -72,6 +78,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
           : 'Could not copy profile card right now. Please try again.'
       toast.error(message)
     } finally {
+      setIsShareMenuOpen(false)
       setIsCopying(false)
     }
   }
@@ -119,6 +126,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
             variant="ghost"
             size="sm"
             className="gap-1.5"
+            disabled={isCopying}
             onClick={() => setIsShareMenuOpen((current) => !current)}
             aria-label="Open share menu"
             aria-haspopup="menu"
@@ -155,6 +163,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                 type="button"
                 role="menuitem"
                 onClick={shareToTwitter}
+                disabled={isCopying}
                 className="text-popover-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm focus-visible:ring-2 focus-visible:outline-none"
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4 fill-current">
@@ -188,18 +197,38 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               <p className="font-pixel text-muted-foreground truncate text-[10px] tracking-[0.14em] uppercase sm:text-[11px] sm:tracking-[0.16em]">
                 @{profile.username}
               </p>
-              {profile.githubUrl ? (
-                <div className="mt-2 flex items-center">
-                  <a
-                    href={profile.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5 rounded-sm text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
-                    aria-label={`${profile.displayName}'s GitHub profile`}
-                  >
-                    <Github className="size-3.5 sm:size-4" aria-hidden />
-                    <span>GitHub</span>
-                  </a>
+              {profile.githubUrl || profile.twitterUrl ? (
+                <div className="mt-2 flex items-center gap-3">
+                  {profile.githubUrl ? (
+                    <a
+                      href={profile.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5 rounded-sm text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
+                      aria-label={`${profile.displayName}'s GitHub profile`}
+                    >
+                      <Github className="size-3.5 sm:size-4" aria-hidden />
+                      <span>GitHub</span>
+                    </a>
+                  ) : null}
+                  {profile.twitterUrl ? (
+                    <a
+                      href={profile.twitterUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5 rounded-sm text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
+                      aria-label={`${profile.displayName}'s X profile`}
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        className="size-3.5 fill-current sm:size-4"
+                      >
+                        <path d="M18.901 1.153h3.68l-8.04 9.19 9.458 12.504h-7.406l-5.8-7.584-6.64 7.584H.472l8.6-9.826L0 1.153h7.594l5.243 6.932zm-1.292 19.49h2.04L6.486 3.24H4.298z" />
+                      </svg>
+                      <span>X</span>
+                    </a>
+                  ) : null}
                 </div>
               ) : null}
             </div>
@@ -251,10 +280,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                               className="size-4 shrink-0 sm:size-5"
                             />
                           ) : null}
-                          <span className="min-w-0 truncate">
-                            {model.name}
-                            <span className="text-muted-foreground"> ({model.provider})</span>
-                          </span>
+                          <span className="min-w-0 truncate">{model.name}</span>
                         </span>
                       ) : (
                         <span className="text-muted-foreground text-xs sm:text-sm">

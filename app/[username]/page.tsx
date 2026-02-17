@@ -33,9 +33,20 @@ export default async function UserProfilePage({
   const githubUrlFromMetadata =
     getMetadataValue(metadata, 'profile_url') ?? getMetadataValue(metadata, 'html_url')
   const githubUrl = canEdit
-    ? githubUrlFromMetadata ??
-      (githubHandleFromMetadata ? `https://github.com/${githubHandleFromMetadata}` : null)
+    ? (githubUrlFromMetadata ??
+      (githubHandleFromMetadata ? `https://github.com/${githubHandleFromMetadata}` : null))
     : `https://github.com/${profile.username}`
+  const twitterHandleFromMetadata =
+    getMetadataValue(metadata, 'twitter_username') ??
+    getMetadataValue(metadata, 'x_username') ??
+    getMetadataValue(metadata, 'screen_name')
+  const twitterUrlFromMetadata = getMetadataValue(metadata, 'twitter_url')
+  const twitterUrl = canEdit
+    ? (twitterUrlFromMetadata ??
+      (twitterHandleFromMetadata
+        ? `https://x.com/${twitterHandleFromMetadata.replace(/^@+/, '')}`
+        : null))
+    : null
 
   const selections = await getProfileSelections(profile.id)
   const catalog = canEdit ? await getModelCatalog() : []
@@ -61,6 +72,7 @@ export default async function UserProfilePage({
               username: profile.username,
               image: profile.image,
               githubUrl,
+              twitterUrl,
             }}
             modelSlots={modelSlots}
             modelEditor={

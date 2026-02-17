@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getProfileByUserId } from '@/server/data/profiles'
-import { SignInWithGitHub } from './sign-in-with-github'
+import { SignInWithGitHub, SignInWithX } from './sign-in-providers'
 
 export default async function SignInPage() {
   const supabase = await createClient()
@@ -29,11 +29,14 @@ export default async function SignInPage() {
             Sign in to share your stack
           </h1>
           <p className="text-muted-foreground text-sm">
-            Connect with GitHub to publish your Plan, Build, and Debug models.
+            Connect with GitHub or X to publish your Plan, Build, and Debug models.
           </p>
         </div>
 
-        <SignInWithGitHub />
+        <div className="flex w-full flex-col gap-3">
+          <SignInWithGitHub />
+          <SignInWithX />
+        </div>
         <p className="text-muted-foreground text-xs">
           <Link href="/" className="hover:text-foreground underline underline-offset-4">
             Back to home

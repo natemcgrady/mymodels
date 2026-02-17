@@ -1,11 +1,7 @@
 import type { LeaderboardData } from '@/server/data/leaderboard'
 import { LeaderboardSection } from '@/components/leaderboard-section'
 
-export function CommunityLeaderboardSection({
-  leaderboard,
-}: {
-  leaderboard: LeaderboardData
-}) {
+export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: LeaderboardData }) {
   return (
     <section
       id="leaderboard"

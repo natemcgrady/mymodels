@@ -29,6 +29,31 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   ]
   const requestUrl = new URL(request.url)
   const origin = requestUrl.origin
+  const theme = requestUrl.searchParams.get('theme') === 'light' ? 'light' : 'dark'
+  const palette =
+    theme === 'dark'
+      ? {
+          pageBg: '#0d0d0d',
+          cardBg: '#141414',
+          border: '#2b2b2b',
+          rowBg: '#1b1b1b',
+          text: '#f3f3f3',
+          mutedText: '#a8a8a8',
+          avatarFallbackBg: '#202020',
+          iconBadgeBg: '#111111',
+          iconBadgeBorder: '#333333',
+        }
+      : {
+          pageBg: '#f5f4f1',
+          cardBg: '#fbfaf8',
+          border: '#dddbd4',
+          rowBg: '#f1efea',
+          text: '#30302b',
+          mutedText: '#77756f',
+          avatarFallbackBg: '#efede7',
+          iconBadgeBg: '#1c1c1c',
+          iconBadgeBorder: '#2f2f2f',
+        }
 
   const displayName = profile.displayName || profile.username
   const avatarSource = profile.image?.startsWith('http') ? profile.image : null
@@ -41,8 +66,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f5f4f1',
-        color: '#30302b',
+        backgroundColor: palette.pageBg,
+        color: palette.text,
         padding: 64,
         fontFamily:
           'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans',
@@ -52,8 +77,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         style={{
           width: 1180,
           borderRadius: 32,
-          border: '1px solid #dddbd4',
-          backgroundColor: '#fbfaf8',
+          border: `1px solid ${palette.border}`,
+          backgroundColor: palette.cardBg,
           display: 'flex',
           flexDirection: 'column',
           padding: 56,
@@ -72,7 +97,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 height: 128,
                 borderRadius: '9999px',
                 objectFit: 'cover',
-                border: '1px solid #dddbd4',
+                border: `1px solid ${palette.border}`,
               }}
             />
           ) : (
@@ -81,14 +106,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 width: 128,
                 height: 128,
                 borderRadius: '9999px',
-                border: '1px solid #dddbd4',
+                border: `1px solid ${palette.border}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: 54,
                 fontWeight: 700,
-                color: '#30302b',
-                backgroundColor: '#efede7',
+                color: palette.text,
+                backgroundColor: palette.avatarFallbackBg,
                 textTransform: 'uppercase',
               }}
             >
@@ -103,7 +128,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 fontSize: 58,
                 fontWeight: 700,
                 lineHeight: 1.05,
-                color: '#30302b',
+                color: palette.text,
               }}
             >
               {displayName}
@@ -115,7 +140,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 letterSpacing: '0.16em',
                 opacity: 0.72,
                 textTransform: 'uppercase',
-                color: '#77756f',
+                color: palette.mutedText,
               }}
             >
               @{profile.username}
@@ -126,7 +151,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         <div
           style={{
             marginTop: 48,
-            borderTop: '1px solid #dddbd4',
+            borderTop: `1px solid ${palette.border}`,
             paddingTop: 34,
             display: 'flex',
             flexDirection: 'column',
@@ -140,7 +165,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
               opacity: 0.72,
-              color: '#77756f',
+              color: palette.mutedText,
             }}
           >
             Currently using
@@ -154,8 +179,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 borderRadius: 18,
-                border: '1px solid #dddbd4',
-                backgroundColor: '#f1efea',
+                border: `1px solid ${palette.border}`,
+                backgroundColor: palette.rowBg,
                 padding: '20px 24px',
               }}
             >
@@ -166,7 +191,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   opacity: 0.75,
-                  color: '#77756f',
+                  color: palette.mutedText,
                 }}
               >
                 {label}
@@ -175,9 +200,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 12,
+                  gap: 16,
                   fontSize: 28,
-                  color: '#30302b',
+                  color: palette.text,
                 }}
               >
                 {model ? (
@@ -187,19 +212,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                       <img
                         src={`${origin}${getProviderBrand(model.provider)?.logoPath}`}
                         alt={model.provider}
-                        width={32}
-                        height={32}
+                        width={30}
+                        height={30}
                         style={{
-                          width: 32,
-                          height: 32,
+                          width: 30,
+                          height: 30,
+                          flexShrink: 0,
                         }}
                       />
                     ) : null}
                     <span>{model.name}</span>
-                    <span style={{ color: '#77756f' }}>({model.provider})</span>
                   </>
                 ) : (
-                  <span style={{ color: '#77756f' }}>Not selected</span>
+                  <span style={{ color: palette.mutedText }}>Not selected</span>
                 )}
               </div>
             </div>

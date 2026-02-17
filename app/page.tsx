@@ -1,10 +1,6 @@
 import { BuildStackHeroSection } from '@/components/build-stack-hero-section'
 import { type ModelPreviewRow } from '@/components/example-profile-card'
-import {
-  formatSelectionLabel,
-  getMetadataValue,
-  sanitizeUsername,
-} from '@/lib/profile-utils'
+import { formatSelectionLabel, getMetadataValue, sanitizeUsername } from '@/lib/profile-utils'
 import { createClient } from '@/lib/supabase/server'
 import { getProfileByUserId, getProfileSelections } from '@/server/data/profiles'
 

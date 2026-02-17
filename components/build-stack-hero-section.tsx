@@ -1,8 +1,5 @@
 import Link from 'next/link'
-import {
-  ExampleProfileCard,
-  type ModelPreviewRow,
-} from '@/components/example-profile-card'
+import { ExampleProfileCard, type ModelPreviewRow } from '@/components/example-profile-card'
 import { HeroVerbTypewriter } from '@/components/hero-verb-typewriter'
 
 type HeroProfile = {
@@ -42,9 +39,7 @@ export function BuildStackHeroSection({
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              href={
-                isLoggedIn ? (profileUsername ? `/${profileUsername}` : '/') : '/auth/signin'
-              }
+              href={isLoggedIn ? (profileUsername ? `/${profileUsername}` : '/') : '/auth/signin'}
               className="bg-foreground text-background hover:bg-foreground/90 rounded-md px-4 py-2 text-sm font-medium transition"
             >
               {isLoggedIn ? 'View your profile' : 'Sign in to personalize'}
@@ -57,11 +52,7 @@ export function BuildStackHeroSection({
             </Link>
           </div>
         </div>
-        <ExampleProfileCard
-          isLoggedIn={isLoggedIn}
-          profile={profile}
-          modelRows={modelRows}
-        />
+        <ExampleProfileCard isLoggedIn={isLoggedIn} profile={profile} modelRows={modelRows} />
       </div>
     </section>
   )
