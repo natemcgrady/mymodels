@@ -55,20 +55,17 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             }}
             modelSlots={modelSlots}
             modelEditor={
-              canEdit
-                ? ({ onSave }) => (
-                    <ModelSelectionForm
-                      username={profile.username}
-                      catalog={catalog}
-                      initialSelections={{
-                        plan: selections.plan?.id ?? null,
-                        build: selections.build?.id ?? null,
-                        debug: selections.debug?.id ?? null,
-                      }}
-                      onSave={onSave}
-                    />
-                  )
-                : null
+              canEdit ? (
+                <ModelSelectionForm
+                  username={profile.username}
+                  catalog={catalog}
+                  initialSelections={{
+                    plan: selections.plan?.id ?? null,
+                    build: selections.build?.id ?? null,
+                    debug: selections.debug?.id ?? null,
+                  }}
+                />
+              ) : null
             }
           />
         </div>
