@@ -176,20 +176,25 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
         </div>
 
         <div className="border-border bg-card w-full border p-4 sm:p-6 md:p-8">
-          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-            {profile.image ? (
-              <Image
-                src={profile.image}
-                alt={profile.displayName}
-                width={64}
-                height={64}
-                className="border-border h-12 w-12 border object-cover sm:h-16 sm:w-16"
-              />
-            ) : (
-              <div className="border-border bg-muted text-foreground flex h-12 w-12 items-center justify-center border text-lg font-semibold sm:h-16 sm:w-16 sm:text-xl">
-                {profile.displayName.slice(0, 1).toUpperCase()}
-              </div>
-            )}
+          <div className="grid min-w-0 grid-cols-[auto_1fr] gap-3 sm:gap-4">
+            <div
+              className={`border-border relative flex min-w-12 items-center justify-center overflow-hidden border sm:min-w-16 ${!profile.image ? 'bg-muted' : ''}`}
+              style={{ aspectRatio: 1, height: '100%', width: 'auto' }}
+            >
+              {profile.image ? (
+                <Image
+                  src={profile.image}
+                  alt={profile.displayName}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              ) : (
+                <span className="text-foreground text-lg font-semibold sm:text-xl">
+                  {profile.displayName.slice(0, 1).toUpperCase()}
+                </span>
+              )}
+            </div>
             <div className="min-w-0">
               <h1 className="text-foreground text-xl font-semibold text-balance sm:text-2xl">
                 {profile.displayName}
