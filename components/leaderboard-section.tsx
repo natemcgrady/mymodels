@@ -162,9 +162,9 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                       <Image
                         src={item.logoPath}
                         alt={item.provider}
-                        width={16}
-                        height={16}
-                        className="size-4 shrink-0 "
+                        width={18}
+                        height={18}
+                        className="size-[18px] shrink-0 rounded-[8px]"
                       />
                     ) : null}
                     <span className="text-foreground min-w-0 truncate font-medium">

@@ -166,13 +166,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                 disabled={isCopying}
                 className="text-popover-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-center gap-2  px-2 py-2 text-left text-sm focus-visible:ring-2 focus-visible:outline-none"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="size-4 fill-current"
-                  stroke="currentColor"
-                  strokeWidth={1.2}
-                >
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4 fill-current">
                   <path d="M18.901 1.153h3.68l-8.04 9.19 9.458 12.504h-7.406l-5.8-7.584-6.64 7.584H.472l8.6-9.826L0 1.153h7.594l5.243 6.932zm-1.292 19.49h2.04L6.486 3.24H4.298z" />
                 </svg>
                 Share to Twitter
@@ -213,7 +207,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5  text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
                       aria-label={`${profile.displayName}'s GitHub profile`}
                     >
-                      <Github className="size-4" aria-hidden />
+                      <Github className="size-3.5 sm:size-4" aria-hidden />
                     </a>
                   ) : null}
                   {profile.twitterUrl ? (
@@ -227,9 +221,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       <svg
                         viewBox="0 0 24 24"
                         aria-hidden="true"
-                        className="size-4 fill-current"
-                        stroke="currentColor"
-                        strokeWidth={1.2}
+                        className="size-3.5 fill-current sm:size-4"
                       >
                         <path d="M18.901 1.153h3.68l-8.04 9.19 9.458 12.504h-7.406l-5.8-7.584-6.64 7.584H.472l8.6-9.826L0 1.153h7.594l5.243 6.932zm-1.292 19.49h2.04L6.486 3.24H4.298z" />
                       </svg>
@@ -281,9 +273,9 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                             <Image
                               src={providerBrand.logoPath}
                               alt={model.provider}
-                              width={16}
-                              height={16}
-                              className="size-4 shrink-0"
+                              width={20}
+                              height={20}
+                              className="size-4 shrink-0 sm:size-5"
                             />
                           ) : null}
                           <span className="min-w-0 truncate">{model.name}</span>
