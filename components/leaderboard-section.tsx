@@ -91,7 +91,33 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
         <div
           role="tablist"
           aria-label="Leaderboard category"
-          className="border-border/80 bg-background/60 relative grid w-full items-center border p-1"
+          className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:hidden"
+        >
+          {tabs.map((tab) => {
+            const isActive = tab.key === selectedTab?.key
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`leaderboard-panel-${tab.key}`}
+                className={`border-border/80 focus-visible:ring-ring min-h-11 shrink-0 border px-4 text-sm font-semibold tracking-[0.08em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none ${
+                  isActive
+                    ? 'bg-foreground text-background'
+                    : 'bg-background/60 text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
+        <div
+          role="tablist"
+          aria-label="Leaderboard category"
+          className="border-border/80 bg-background/60 relative hidden w-full items-center border p-1 sm:grid"
           style={{ gridTemplateColumns: `repeat(${Math.max(tabs.length, 1)}, minmax(0, 1fr))` }}
         >
           <span
@@ -112,7 +138,7 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`leaderboard-panel-${tab.key}`}
-                className={`relative z-10 px-3 py-3 text-xs font-semibold tracking-[0.12em] uppercase transition-colors sm:text-sm ${
+                className={`focus-visible:ring-ring relative z-10 px-3 py-3 text-sm font-semibold tracking-[0.12em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none ${
                   isActive ? 'text-background' : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => setActiveTab(tab.key)}
