@@ -114,7 +114,7 @@ export function UserButton() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="border-border hover:bg-muted focus-visible:ring-ring border p-0.5 transition focus-visible:ring-2 focus-visible:outline-none"
+        className="border-border hover:bg-muted focus-visible:ring-ring flex min-h-[44px] min-w-[44px] items-center justify-center border p-0.5 transition focus-visible:ring-2 focus-visible:outline-none"
         aria-label="Open account menu"
         aria-haspopup="menu"
         aria-expanded={open}
@@ -137,7 +137,7 @@ export function UserButton() {
       {open ? (
         <div
           role="menu"
-          className="border-border bg-card absolute right-0 z-20 mt-2 flex w-40 flex-col gap-1 border p-1 shadow-lg"
+          className="border-border bg-card absolute right-0 z-20 mt-2 flex w-40 flex-col gap-1 overflow-y-auto overscroll-contain border p-1 shadow-lg"
         >
           <Link
             href={profile?.username ? `/${profile.username}` : '/'}

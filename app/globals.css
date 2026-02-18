@@ -170,6 +170,10 @@ html.dark {
 }
 
 @layer base {
+  html {
+    min-width: 320px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -190,6 +194,9 @@ html.dark {
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+    -webkit-tap-highlight-color: transparent;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   .lucide {

@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis, YAxis } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -23,7 +24,22 @@ type LeaderboardSectionProps = {
 }
 
 export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
-  const [activeTab, setActiveTab] = useState(tabs[0]?.key ?? '')
+  const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const activeTab = searchParams.get('tab') ?? tabs[0]?.key ?? ''
+
+  const setActiveTab = (key: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (key === tabs[0]?.key) {
+      params.delete('tab')
+    } else {
+      params.set('tab', key)
+    }
+    const query = params.toString()
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+  }
+
   const selectedTab = useMemo(
     () => tabs.find((tab) => tab.key === activeTab) ?? tabs[0],
     [activeTab, tabs]
@@ -64,12 +80,14 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
     (maxLength, item) => Math.max(maxLength, item.model.length),
     0
   )
-  const yAxisWidth = Math.max(120, longestModelNameLength * 8 + 16)
-  const chartMinWidth = yAxisWidth + 360
+  const MAX_LABEL_CHARS = 18
+  const yAxisWidth = Math.min(128, Math.max(88, longestModelNameLength * 6 + 14))
+  const tickFormatter = (value: string) =>
+    value.length > MAX_LABEL_CHARS ? value.slice(0, MAX_LABEL_CHARS - 1) + '\u2026' : value
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm">
-      <CardHeader>
+      <CardHeader className="px-2 sm:px-6">
         <div
           role="tablist"
           aria-label="Leaderboard category"
@@ -94,7 +112,7 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`leaderboard-panel-${tab.key}`}
-                className={`relative z-10 px-3 py-1.5 text-xs font-semibold tracking-[0.12em] uppercase transition-colors sm:text-sm ${
+                className={`relative z-10 px-3 py-3 text-xs font-semibold tracking-[0.12em] uppercase transition-colors sm:text-sm ${
                   isActive ? 'text-background' : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => setActiveTab(tab.key)}
@@ -110,17 +128,16 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
       <CardContent
         id={`leaderboard-panel-${selectedTab?.key ?? 'overall'}`}
         role="tabpanel"
-        className="space-y-6"
+        className="space-y-4 px-2 sm:space-y-6 sm:px-6"
       >
         {chartData.length === 0 ? (
           <p className="text-muted-foreground text-sm">No model selections yet.</p>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            <div className="hidden sm:block">
               <ChartContainer
                 config={chartConfig}
-                className="min-h-[260px] w-full sm:min-h-[320px]"
-                style={{ minWidth: `${chartMinWidth}px` }}
+                className="h-[280px] min-h-[280px] w-full lg:h-[320px] lg:min-h-[320px]"
               >
                 <BarChart
                   accessibilityLayer
@@ -136,6 +153,7 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                     tickLine={false}
                     axisLine={false}
                     tickMargin={8}
+                    tickFormatter={tickFormatter}
                   />
                   <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} />
                   <ChartTooltip
@@ -159,6 +177,33 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                 </BarChart>
               </ChartContainer>
             </div>
+
+            <ol className="space-y-1 sm:hidden" aria-label="Ranked model list">
+              {chartData.map((item, index) => (
+                <li
+                  key={item.modelKey}
+                  className="border-border/60 bg-background/40 flex items-center justify-between gap-3 border px-3 py-2"
+                >
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span
+                      className="font-pixel text-muted-foreground w-5 shrink-0 text-[10px] tabular-nums"
+                      aria-label={`Rank ${index + 1}`}
+                    >
+                      {index + 1}
+                    </span>
+                    <span
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: item.fill }}
+                      aria-hidden
+                    />
+                    <span className="text-foreground min-w-0 truncate text-sm">{item.model}</span>
+                  </div>
+                  <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+                    {item.votes} {item.votes === 1 ? 'pick' : 'picks'}
+                  </span>
+                </li>
+              ))}
+            </ol>
           </>
         )}
       </CardContent>

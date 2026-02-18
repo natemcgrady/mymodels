@@ -36,7 +36,7 @@ function SignInWithProvider({
     <button
       type="button"
       onClick={handleSignIn}
-      className="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring flex w-full items-center justify-center gap-3 border px-6 py-3 text-sm font-medium transition focus-visible:ring-2 focus-visible:outline-none"
+      className="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring flex w-full items-center justify-center gap-3 border px-6 py-3.5 text-sm font-medium transition focus-visible:ring-2 focus-visible:outline-none"
     >
       {icon}
       {label}

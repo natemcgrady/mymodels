@@ -63,7 +63,7 @@ export default async function Home() {
       id="main-content"
       className="bg-background text-foreground relative min-h-screen scroll-mt-20 overflow-x-hidden"
     >
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-14 px-4 py-12 sm:gap-20 sm:px-6 sm:py-16">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:gap-20 sm:px-6 sm:py-16">
         <BuildStackHeroSection
           isLoggedIn={isLoggedIn}
           profileUsername={profile?.username ?? null}

@@ -140,7 +140,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
           {isShareMenuOpen ? (
             <div
               role="menu"
-              className="border-border bg-popover absolute right-0 mt-2 w-52 overflow-y-auto overscroll-contain border p-1.5 shadow-md"
+              className="border-border bg-popover absolute right-0 mt-2 w-52 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain border p-1.5 shadow-md"
             >
               <button
                 type="button"
@@ -280,6 +280,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                               alt={model.provider}
                               width={20}
                               height={20}
+                              sizes="20px"
                               className="size-4 shrink-0 sm:size-5"
                             />
                           ) : null}
