@@ -185,7 +185,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
         <div className="border-border bg-card w-full border p-4 sm:p-6 md:p-8">
           <div className="grid min-w-0 grid-cols-[auto_1fr] gap-3 sm:gap-4">
             <div
-              className={`border-border relative flex min-w-12 items-center justify-center overflow-hidden border sm:min-w-16 ${!profile.image ? 'bg-muted' : ''}`}
+              className={`relative flex min-w-12 items-center justify-center overflow-hidden rounded-full sm:min-w-16 ${!profile.image ? 'bg-muted' : ''}`}
               style={{ aspectRatio: 1, height: '100%', width: 'auto' }}
             >
               {profile.image ? (

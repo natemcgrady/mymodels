@@ -41,8 +41,6 @@
   --font-sans: Geist, ui-sans-serif, sans-serif, system-ui;
   --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-mono: Geist Mono, ui-monospace, monospace;
-  --radius: 0.5rem;
-  --radius: 0rem;
   --shadow-x: 0;
   --shadow-y: 1px;
   --shadow-blur: 3px;
@@ -101,7 +99,6 @@ html.dark {
   --font-sans: Geist, ui-sans-serif, sans-serif, system-ui;
   --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-mono: Geist Mono, ui-monospace, monospace;
-  --radius: 0rem;
   --shadow-x: 0;
   --shadow-y: 1px;
   --shadow-blur: 3px;
@@ -185,12 +182,7 @@ html.dark {
 
   * {
     @apply border-border outline-ring/50;
-    border-radius: 0 !important;
-  }
-
-  *::before,
-  *::after {
-    border-radius: 0 !important;
+    border-radius: 0;
   }
 
   body {
