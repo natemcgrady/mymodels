@@ -5,11 +5,13 @@ import { getProfileByUsername, getProfileSelections } from '@/server/data/profil
 import { ModelSelectionForm } from '@/components/model-selection-form'
 import { ProfileCard } from '@/components/profile-card'
 
+type UserProfilePageProps = {
+  params: Promise<{ username: string }>
+}
+
 export default async function UserProfilePage({
   params,
-}: {
-  params: Promise<{ username: string }>
-}) {
+}: UserProfilePageProps) {
   const { username } = await params
   const normalizedUsername = username.trim()
   if (!normalizedUsername) {
