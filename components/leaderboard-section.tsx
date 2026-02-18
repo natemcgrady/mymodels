@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Image from 'next/image'
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis, YAxis } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -159,37 +158,6 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                   </Bar>
                 </BarChart>
               </ChartContainer>
-            </div>
-
-            <div className="space-y-2">
-              {chartData.map((item, index) => (
-                <div
-                  key={item.modelKey}
-                  className="border-border bg-background/60 flex items-center justify-between gap-3 border px-3 py-2"
-                >
-                  <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs sm:text-sm">
-                    <span className="text-muted-foreground shrink-0 font-mono text-xs">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    {item.logoPath ? (
-                      <Image
-                        src={item.logoPath}
-                        alt={item.provider}
-                        width={18}
-                        height={18}
-                        className="size-[18px] shrink-0 rounded-[8px]"
-                      />
-                    ) : null}
-                    <span className="text-foreground font-medium wrap-break-word">
-                      {item.model}
-                    </span>
-                    <span className="text-muted-foreground wrap-break-word">({item.provider})</span>
-                  </div>
-                  <span className="text-foreground shrink-0 text-xs font-semibold sm:text-sm">
-                    {item.votes} {item.votes === 1 ? 'vote' : 'votes'}
-                  </span>
-                </div>
-              ))}
             </div>
           </>
         )}
