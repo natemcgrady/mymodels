@@ -29,6 +29,7 @@ type ModelSelectionFormProps = {
     build: number | null
     debug: number | null
   }
+  onSave?: () => void
 }
 
 type SlotConfig = {
@@ -74,6 +75,7 @@ export function ModelSelectionForm({
   username,
   catalog,
   initialSelections,
+  onSave,
 }: ModelSelectionFormProps) {
   const catalogByProvider = useMemo(() => groupByProvider(catalog), [catalog])
   const [values, setValues] = useState<Record<'plan' | 'build' | 'debug', string>>({
@@ -83,7 +85,13 @@ export function ModelSelectionForm({
   })
 
   return (
-    <form action={updateProfileModels} className="space-y-3">
+    <form
+      action={async (formData) => {
+        await updateProfileModels(formData)
+        onSave?.()
+      }}
+      className="space-y-3"
+    >
       <input type="hidden" name="username" value={username} />
       <input type="hidden" name="plan" value={values.plan} />
       <input type="hidden" name="build" value={values.build} />

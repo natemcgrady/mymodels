@@ -25,7 +25,7 @@ type ProfileCardProps = {
     twitterUrl?: string | null
   }
   modelSlots: ModelSlot[]
-  modelEditor?: ReactNode
+  modelEditor?: ReactNode | ((controls: { onSave: () => void }) => ReactNode)
 }
 
 export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardProps) {
@@ -116,6 +116,13 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
       document.removeEventListener('keydown', onEscape)
     }
   }, [isShareMenuOpen])
+
+  const handleModelEditorSave = () => {
+    setIsEditing(false)
+  }
+
+  const renderedModelEditor =
+    typeof modelEditor === 'function' ? modelEditor({ onSave: handleModelEditorSave }) : modelEditor
 
   return (
     <div className="w-full pb-1">
@@ -255,9 +262,9 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               ) : null}
             </div>
 
-            {isEditing && modelEditor ? (
+            {isEditing && renderedModelEditor ? (
               <div className="mt-4" data-capture-exclude="true">
-                {modelEditor}
+                {renderedModelEditor}
               </div>
             ) : (
               <ul className="mt-4 space-y-3">
