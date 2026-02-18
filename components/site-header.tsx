@@ -11,7 +11,7 @@ export function SiteHeader() {
           <Link
             href="/"
             aria-label="mymodels.dev"
-            className="focus-visible:ring-ring flex items-center transition-opacity hover:opacity-80 focus-visible: focus-visible:ring-2 focus-visible:outline-none"
+            className="focus-visible:ring-ring focus-visible: flex items-center transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
           >
             <Logo size={32} />
           </Link>

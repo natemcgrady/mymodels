@@ -83,7 +83,7 @@ export function UserButton() {
   if (loading) {
     return (
       <div
-        className="border-border bg-muted h-8 w-8 animate-pulse  border"
+        className="border-border bg-muted h-8 w-8 animate-pulse border"
         role="status"
         aria-label="Loading user information"
       >
@@ -96,7 +96,7 @@ export function UserButton() {
     return (
       <button
         onClick={signIn}
-        className="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring  border px-4 py-2 text-sm font-medium transition focus-visible:ring-2 focus-visible:outline-none"
+        className="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring border px-4 py-2 text-sm font-medium transition focus-visible:ring-2 focus-visible:outline-none"
       >
         Sign In
       </button>
@@ -114,7 +114,7 @@ export function UserButton() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="border-border hover:bg-muted focus-visible:ring-ring  border p-0.5 transition focus-visible:ring-2 focus-visible:outline-none"
+        className="border-border hover:bg-muted focus-visible:ring-ring border p-0.5 transition focus-visible:ring-2 focus-visible:outline-none"
         aria-label="Open account menu"
         aria-haspopup="menu"
         aria-expanded={open}
@@ -128,7 +128,7 @@ export function UserButton() {
             className=""
           />
         ) : (
-          <div className="bg-muted text-foreground flex h-8 w-8 items-center justify-center  text-xs font-semibold">
+          <div className="bg-muted text-foreground flex h-8 w-8 items-center justify-center text-xs font-semibold">
             {displayName.charAt(0).toUpperCase()}
           </div>
         )}
@@ -137,19 +137,19 @@ export function UserButton() {
       {open ? (
         <div
           role="menu"
-          className="border-border bg-card absolute right-0 z-20 mt-2 flex w-40 flex-col gap-1  border p-1 shadow-lg"
+          className="border-border bg-card absolute right-0 z-20 mt-2 flex w-40 flex-col gap-1 border p-1 shadow-lg"
         >
           <Link
             href={profile?.username ? `/${profile.username}` : '/'}
             onClick={() => setOpen(false)}
-            className="text-foreground hover:bg-muted  px-3 py-2 text-sm transition"
+            className="text-foreground hover:bg-muted px-3 py-2 text-sm transition"
             role="menuitem"
           >
             Profile
           </Link>
           <button
             onClick={signOut}
-            className="text-foreground hover:bg-muted focus-visible:ring-ring  px-3 py-2 text-left text-sm transition focus-visible:ring-2 focus-visible:outline-none"
+            className="text-foreground hover:bg-muted focus-visible:ring-ring px-3 py-2 text-left text-sm transition focus-visible:ring-2 focus-visible:outline-none"
             role="menuitem"
           >
             Sign out

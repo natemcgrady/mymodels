@@ -96,7 +96,7 @@ export function ModelSelectionForm({
           return (
             <li
               key={slot.id}
-              className="border-border/70 bg-background/70 flex flex-col items-stretch gap-2  border px-3 py-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-4"
+              className="border-border/70 bg-background/70 flex flex-col items-stretch gap-2 border px-3 py-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-4"
             >
               <Label
                 htmlFor={slot.id}

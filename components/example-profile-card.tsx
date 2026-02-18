@@ -20,7 +20,7 @@ export function ExampleProfileCard({
   modelRows: ModelPreviewRow[]
 }) {
   return (
-    <article className="border-border/85 bg-background/85 relative overflow-hidden  border p-4 shadow-md sm:p-6">
+    <article className="border-border/85 bg-background/85 relative overflow-hidden border p-4 shadow-md sm:p-6">
       <div className="relative space-y-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -31,15 +31,15 @@ export function ExampleProfileCard({
                   alt={profile.displayName}
                   width={56}
                   height={56}
-                  className="border-border h-12 w-12  border object-cover sm:h-14 sm:w-14"
+                  className="border-border h-12 w-12 border object-cover sm:h-14 sm:w-14"
                 />
               ) : (
-                <div className="border-border bg-muted text-foreground flex h-12 w-12 items-center justify-center  border text-base font-semibold sm:h-14 sm:w-14 sm:text-lg">
+                <div className="border-border bg-muted text-foreground flex h-12 w-12 items-center justify-center border text-base font-semibold sm:h-14 sm:w-14 sm:text-lg">
                   {profile.displayName.slice(0, 1).toUpperCase()}
                 </div>
               )
             ) : (
-              <div className="border-border bg-muted text-muted-foreground flex h-12 w-12 items-center justify-center  border sm:h-14 sm:w-14">
+              <div className="border-border bg-muted text-muted-foreground flex h-12 w-12 items-center justify-center border sm:h-14 sm:w-14">
                 <User className="size-4" aria-hidden />
               </div>
             )}
@@ -61,7 +61,7 @@ export function ExampleProfileCard({
           {modelRows.map((row) => (
             <div
               key={row.label}
-              className="border-border bg-card/80 flex min-w-0 items-center justify-between gap-4  border px-3 py-2.5 sm:px-4 sm:py-3"
+              className="border-border bg-card/80 flex min-w-0 items-center justify-between gap-4 border px-3 py-2.5 sm:px-4 sm:py-3"
             >
               <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.15em] uppercase sm:text-[11px]">
                 {row.label}

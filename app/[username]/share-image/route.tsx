@@ -5,8 +5,13 @@ import { getProfileByUsername, getProfileSelections } from '@/server/data/profil
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const WIDTH = 1440
-const HEIGHT = 900
+const WIDTH = 1200
+const HEIGHT = 675
+
+const FONT_SANS =
+  'Geist, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif'
+const FONT_PIXEL =
+  '"Geist Pixel Square", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
 
 export async function GET(request: Request, { params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
@@ -33,26 +38,24 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   const palette =
     theme === 'dark'
       ? {
-          pageBg: '#0d0d0d',
-          cardBg: '#141414',
-          border: '#2b2b2b',
-          rowBg: '#1b1b1b',
-          text: '#f3f3f3',
-          mutedText: '#a8a8a8',
-          avatarFallbackBg: '#202020',
-          iconBadgeBg: '#111111',
-          iconBadgeBorder: '#333333',
+          pageBg: '#262624',
+          cardBg: '#262624',
+          border: '#3e3e38',
+          rowBg: '#262624',
+          text: '#c3c0b6',
+          mutedText: '#b7b5a9',
+          primary: '#00bba7',
+          avatarFallbackBg: '#1b1b19',
         }
       : {
-          pageBg: '#f5f4f1',
-          cardBg: '#fbfaf8',
-          border: '#dddbd4',
-          rowBg: '#f1efea',
-          text: '#30302b',
-          mutedText: '#77756f',
-          avatarFallbackBg: '#efede7',
-          iconBadgeBg: '#1c1c1c',
-          iconBadgeBorder: '#2f2f2f',
+          pageBg: '#faf9f5',
+          cardBg: '#faf9f5',
+          border: '#dad9d4',
+          rowBg: '#faf9f5',
+          text: '#3d3929',
+          mutedText: '#83827d',
+          primary: '#00786f',
+          avatarFallbackBg: '#ede9de',
         }
 
   const displayName = profile.displayName || profile.username
@@ -68,16 +71,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         justifyContent: 'center',
         backgroundColor: palette.pageBg,
         color: palette.text,
-        padding: 64,
-        fontFamily:
-          'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans',
+        fontFamily: FONT_SANS,
       }}
     >
       <div
         style={{
-          width: 1180,
-          borderRadius: 32,
-          border: `1px solid ${palette.border}`,
+          width: WIDTH,
           backgroundColor: palette.cardBg,
           display: 'flex',
           flexDirection: 'column',
@@ -87,16 +86,18 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
       >
         <div
           style={{
+            display: 'flex',
             position: 'absolute',
             top: 32,
             right: 40,
-            fontSize: 22,
-            fontWeight: 600,
-            color: palette.mutedText,
+            fontSize: 28,
+            fontWeight: 700,
+            color: palette.primary,
+            fontFamily: FONT_PIXEL,
             letterSpacing: '0.04em',
           }}
         >
-          mymodels.dev
+          mymodels.dev/{normalizedUsername}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
           {avatarSource ? (
@@ -109,7 +110,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
               style={{
                 width: 128,
                 height: 128,
-                borderRadius: '9999px',
                 objectFit: 'cover',
                 border: `1px solid ${palette.border}`,
               }}
@@ -119,7 +119,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
               style={{
                 width: 128,
                 height: 128,
-                borderRadius: '9999px',
                 border: `1px solid ${palette.border}`,
                 display: 'flex',
                 alignItems: 'center',
@@ -155,6 +154,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 opacity: 0.72,
                 textTransform: 'uppercase',
                 color: palette.mutedText,
+                fontFamily: FONT_PIXEL,
               }}
             >
               @{profile.username}
@@ -180,6 +180,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
               textTransform: 'uppercase',
               opacity: 0.72,
               color: palette.mutedText,
+              fontFamily: FONT_PIXEL,
             }}
           >
             Currently using
@@ -192,7 +193,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                borderRadius: 18,
                 border: `1px solid ${palette.border}`,
                 backgroundColor: palette.rowBg,
                 padding: '20px 24px',
@@ -206,6 +206,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                   textTransform: 'uppercase',
                   opacity: 0.75,
                   color: palette.mutedText,
+                  fontFamily: FONT_PIXEL,
                 }}
               >
                 {label}
@@ -219,6 +220,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                   fontSize: 28,
                   lineHeight: 1,
                   color: palette.text,
+                  fontFamily: FONT_PIXEL,
                 }}
               >
                 {model ? (
