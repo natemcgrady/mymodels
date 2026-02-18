@@ -5,19 +5,19 @@ export type ProviderBrand = {
 
 export const PROVIDER_BRANDS: Record<string, ProviderBrand> = {
   Anthropic: {
-    color: '#D4A574',
+    color: '#d97757',
     logoPath: '/anthropic-light.svg',
   },
   Cursor: {
-    color: '#6B57FF',
+    color: '#f54e00',
     logoPath: '/cursor.svg',
   },
   Google: {
-    color: '#4285F4',
+    color: '#00639f',
     logoPath: '/google.svg',
   },
   OpenAI: {
-    color: '#10A37F',
+    color: '#16b28b',
     logoPath: '/openai-light.svg',
   },
   xAI: {

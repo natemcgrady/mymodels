@@ -1,6 +1,8 @@
 import { BuildStackHeroSection } from '@/components/build-stack-hero-section'
+import { CommunityLeaderboardSection } from '@/components/community-leaderboard-section'
 import { type ModelPreviewRow } from '@/components/example-profile-card'
 import { formatSelectionLabel, getMetadataValue, sanitizeUsername } from '@/lib/profile-utils'
+import { getLeaderboardData } from '@/server/data/leaderboard'
 import { createClient } from '@/lib/supabase/server'
 import { getProfileByUserId, getProfileSelections } from '@/server/data/profiles'
 
@@ -54,19 +56,21 @@ export default async function Home() {
         { label: 'Build', value: 'GPT-5.3 Codex' },
         { label: 'Debug', value: 'Composer 1.5' },
       ]
+  const leaderboard = await getLeaderboardData()
 
   return (
     <main
       id="main-content"
       className="bg-background text-foreground relative min-h-screen scroll-mt-20 overflow-x-hidden"
     >
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:gap-14 sm:px-6 sm:py-10">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-14 px-4 py-12 sm:gap-20 sm:px-6 sm:py-16">
         <BuildStackHeroSection
           isLoggedIn={isLoggedIn}
           profileUsername={profile?.username ?? null}
           profile={exampleIdentity}
           modelRows={modelPreviewRows}
         />
+        <CommunityLeaderboardSection leaderboard={leaderboard} />
       </div>
     </main>
   )

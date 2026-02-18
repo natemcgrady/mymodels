@@ -4,6 +4,7 @@ import { Providers } from './providers'
 import { Toaster } from '@/components/ui/sonner'
 import { SiteHeader } from '@/components/site-header'
 import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import { GeistPixelSquare } from 'geist/font/pixel'
 
 const defaultMetadataBase = 'http://localhost:3000'
@@ -58,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${GeistSans.variable} ${GeistPixelSquare.variable} touch-manipulation font-sans antialiased`}
+        className={`${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable} touch-manipulation font-sans antialiased`}
       >
         <a
           href="#main-content"

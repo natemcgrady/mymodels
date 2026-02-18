@@ -23,11 +23,6 @@ type LeaderboardSectionProps = {
   }>
 }
 
-function truncateLabel(label: string, maxLength = 22) {
-  if (label.length <= maxLength) return label
-  return `${label.slice(0, maxLength - 1)}…`
-}
-
 export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.key ?? '')
   const selectedTab = useMemo(
@@ -40,14 +35,21 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
   )
   const activeEntries = selectedTab?.entries ?? []
 
-  const chartData = activeEntries.map((entry) => {
+  const chartColors = [
+    'var(--chart-1)',
+    'var(--chart-2)',
+    'var(--chart-3)',
+    'var(--chart-4)',
+    'var(--chart-5)',
+  ]
+  const chartData = activeEntries.map((entry, index) => {
     const brand = getProviderBrand(entry.provider)
     return {
       modelKey: `model-${entry.modelId}`,
       model: entry.modelName,
       provider: entry.provider,
       votes: entry.votes,
-      fill: brand?.color ?? 'hsl(var(--chart-1))',
+      fill: chartColors[index % chartColors.length],
       logoPath: brand?.logoPath ?? null,
     }
   })
@@ -59,6 +61,12 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
     }
     return acc
   }, {})
+  const longestModelNameLength = chartData.reduce(
+    (maxLength, item) => Math.max(maxLength, item.model.length),
+    0
+  )
+  const yAxisWidth = Math.max(120, longestModelNameLength * 8 + 16)
+  const chartMinWidth = yAxisWidth + 360
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm">
@@ -109,44 +117,49 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
           <p className="text-muted-foreground text-sm">No model selections yet.</p>
         ) : (
           <>
-            <ChartContainer config={chartConfig} className="min-h-[260px] w-full sm:min-h-[320px]">
-              <BarChart
-                accessibilityLayer
-                data={chartData}
-                layout="vertical"
-                margin={{ top: 4, right: 12, left: 12, bottom: 4 }}
+            <div className="overflow-x-auto">
+              <ChartContainer
+                config={chartConfig}
+                className="min-h-[260px] w-full sm:min-h-[320px]"
+                style={{ minWidth: `${chartMinWidth}px` }}
               >
-                <CartesianGrid horizontal={false} />
-                <YAxis
-                  type="category"
-                  dataKey="model"
-                  width={120}
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tickFormatter={truncateLabel}
-                />
-                <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} />
-                <ChartTooltip
-                  cursor={false}
-                  content={
-                    <ChartTooltipContent
-                      labelFormatter={(_, payload) => payload?.[0]?.payload?.model}
-                    />
-                  }
-                />
-                <Bar dataKey="votes" radius={8}>
-                  {chartData.map((item) => (
-                    <Cell key={item.modelKey} fill={item.fill} />
-                  ))}
-                  <LabelList
-                    dataKey="votes"
-                    position="right"
-                    className="fill-foreground text-xs font-medium"
+                <BarChart
+                  accessibilityLayer
+                  data={chartData}
+                  layout="vertical"
+                  margin={{ top: 4, right: 12, left: 12, bottom: 4 }}
+                >
+                  <CartesianGrid horizontal={false} />
+                  <YAxis
+                    type="category"
+                    dataKey="model"
+                    width={yAxisWidth}
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
                   />
-                </Bar>
-              </BarChart>
-            </ChartContainer>
+                  <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(_, payload) => payload?.[0]?.payload?.model}
+                      />
+                    }
+                  />
+                  <Bar dataKey="votes" radius={0}>
+                    {chartData.map((item) => (
+                      <Cell key={item.modelKey} fill={item.fill} />
+                    ))}
+                    <LabelList
+                      dataKey="votes"
+                      position="right"
+                      className="fill-foreground text-xs font-medium"
+                    />
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            </div>
 
             <div className="space-y-2">
               {chartData.map((item, index) => (
@@ -154,7 +167,7 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                   key={item.modelKey}
                   className="border-border bg-background/60 flex items-center justify-between gap-3 border px-3 py-2"
                 >
-                  <div className="flex min-w-0 items-center gap-2 text-xs sm:text-sm">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs sm:text-sm">
                     <span className="text-muted-foreground shrink-0 font-mono text-xs">
                       {String(index + 1).padStart(2, '0')}
                     </span>
@@ -167,10 +180,10 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                         className="size-[18px] shrink-0 rounded-[8px]"
                       />
                     ) : null}
-                    <span className="text-foreground min-w-0 truncate font-medium">
+                    <span className="text-foreground font-medium wrap-break-word">
                       {item.model}
                     </span>
-                    <span className="text-muted-foreground truncate">({item.provider})</span>
+                    <span className="text-muted-foreground wrap-break-word">({item.provider})</span>
                   </div>
                   <span className="text-foreground shrink-0 text-xs font-semibold sm:text-sm">
                     {item.votes} {item.votes === 1 ? 'vote' : 'votes'}

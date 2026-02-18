@@ -5,14 +5,14 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
   return (
     <section
       id="leaderboard"
-      className="animate-in fade-in fill-mode-both border-border/80 bg-card/70 relative scroll-mt-24 overflow-hidden border p-4 shadow-sm backdrop-blur-sm delay-300 duration-500 sm:p-6"
+      className="border-border/80 bg-card/70 relative scroll-mt-24 overflow-hidden border p-4 shadow-sm backdrop-blur-sm sm:p-6"
     >
       <div className="mb-5 space-y-1.5 sm:mb-6">
         <p className="font-pixel text-muted-foreground text-[10px] tracking-[0.2em] uppercase sm:text-xs">
           Community leaderboard
         </p>
         <h2 className="text-foreground text-2xl font-semibold text-balance sm:text-3xl">
-          Top model picks by slot
+          Top model picks by category
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base">
           See which models are currently most selected across every profile.
@@ -24,7 +24,7 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
             key: 'overall',
             label: 'Overall',
             title: 'Overall Top Models',
-            description: 'Popularity across all profile slots.',
+            description: 'Popularity across all profile categories.',
             entries: leaderboard.overall,
           },
           {
