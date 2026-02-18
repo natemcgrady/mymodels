@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { UserButton } from '@/components/user-button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { Logo } from './logo'
 
 export function SiteHeader() {
   return (
@@ -9,9 +10,10 @@ export function SiteHeader() {
         <div className="flex items-center gap-6">
           <Link
             href="/"
-            className="font-pixel text-foreground focus-visible:ring-ring text-sm tracking-[0.22em] transition-opacity hover:opacity-80 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="mymodels.dev"
+            className="focus-visible:ring-ring flex items-center transition-opacity hover:opacity-80 focus-visible: focus-visible:ring-2 focus-visible:outline-none"
           >
-            mymodels.dev
+            <Logo size={32} />
           </Link>
         </div>
         <div className="flex items-center gap-2">

@@ -5,7 +5,7 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
   return (
     <section
       id="leaderboard"
-      className="animate-in fade-in fill-mode-both border-border/80 bg-card/70 relative scroll-mt-24 overflow-hidden rounded-2xl border p-4 shadow-sm backdrop-blur-sm delay-300 duration-500 sm:p-6"
+      className="animate-in fade-in fill-mode-both border-border/80 bg-card/70 relative scroll-mt-24 overflow-hidden  border p-4 shadow-sm backdrop-blur-sm delay-300 duration-500 sm:p-6"
     >
       <div className="mb-5 space-y-1.5 sm:mb-6">
         <p className="font-pixel text-muted-foreground text-[10px] tracking-[0.2em] uppercase sm:text-xs">

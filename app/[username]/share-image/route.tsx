@@ -229,8 +229,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: 32,
-                          height: 32,
+                          width: 16,
+                          height: 16,
                           marginRight: 14,
                           flexShrink: 0,
                         }}
@@ -239,11 +239,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                         <img
                           src={`${origin}${getProviderBrand(model.provider)?.logoPath}`}
                           alt={model.provider}
-                          width={32}
-                          height={32}
+                          width={16}
+                          height={16}
                           style={{
-                            width: 32,
-                            height: 32,
+                            width: 16,
+                            height: 16,
                           }}
                         />
                       </div>

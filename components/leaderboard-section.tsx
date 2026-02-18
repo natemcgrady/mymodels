@@ -66,12 +66,12 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
         <div
           role="tablist"
           aria-label="Leaderboard category"
-          className="border-border/80 bg-background/60 relative grid w-full items-center rounded-lg border p-1"
+          className="border-border/80 bg-background/60 relative grid w-full items-center  border p-1"
           style={{ gridTemplateColumns: `repeat(${Math.max(tabs.length, 1)}, minmax(0, 1fr))` }}
         >
           <span
             aria-hidden
-            className="bg-foreground pointer-events-none absolute top-1 bottom-1 rounded-md shadow-sm transition-transform duration-300 ease-out"
+            className="bg-foreground pointer-events-none absolute top-1 bottom-1  shadow-sm transition-transform duration-300 ease-out"
             style={{
               width: `calc((100% - 0.5rem) / ${Math.max(tabs.length, 1)})`,
               transform: `translateX(calc(${activeTabIndex} * 100%))`,
@@ -87,7 +87,7 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`leaderboard-panel-${tab.key}`}
-                className={`relative z-10 rounded-md px-3 py-1.5 text-xs font-semibold tracking-[0.12em] uppercase transition-colors sm:text-sm ${
+                className={`relative z-10  px-3 py-1.5 text-xs font-semibold tracking-[0.12em] uppercase transition-colors sm:text-sm ${
                   isActive ? 'text-background' : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => setActiveTab(tab.key)}
@@ -135,7 +135,7 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                     />
                   }
                 />
-                <Bar dataKey="votes" radius={6}>
+                <Bar dataKey="votes" radius={8}>
                   {chartData.map((item) => (
                     <Cell key={item.modelKey} fill={item.fill} />
                   ))}
@@ -152,7 +152,7 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
               {chartData.map((item, index) => (
                 <div
                   key={item.modelKey}
-                  className="border-border bg-background/60 flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
+                  className="border-border bg-background/60 flex items-center justify-between gap-3  border px-3 py-2"
                 >
                   <div className="flex min-w-0 items-center gap-2 text-xs sm:text-sm">
                     <span className="text-muted-foreground shrink-0 font-mono text-xs">
@@ -162,9 +162,9 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                       <Image
                         src={item.logoPath}
                         alt={item.provider}
-                        width={18}
-                        height={18}
-                        className="size-[18px] shrink-0 rounded-sm"
+                        width={16}
+                        height={16}
+                        className="size-4 shrink-0 "
                       />
                     ) : null}
                     <span className="text-foreground min-w-0 truncate font-medium">

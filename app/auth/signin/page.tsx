@@ -20,7 +20,7 @@ export default async function SignInPage() {
       id="main-content"
       className="bg-background text-foreground flex min-h-screen flex-col items-center justify-center px-4 sm:px-6"
     >
-      <div className="border-border bg-card flex w-full max-w-md flex-col items-center gap-6 rounded-xl border p-5 text-center sm:p-8">
+      <div className="border-border bg-card flex w-full max-w-md flex-col items-center gap-6 border p-5 text-center sm:p-8">
         <div className="space-y-2">
           <p className="font-pixel text-muted-foreground text-[11px] tracking-[0.2em] uppercase">
             MyModels.dev

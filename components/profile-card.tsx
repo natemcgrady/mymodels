@@ -140,14 +140,14 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
           {isShareMenuOpen ? (
             <div
               role="menu"
-              className="border-border bg-popover absolute right-0 mt-2 w-52 overflow-y-auto overscroll-contain rounded-md border p-1.5 shadow-md"
+              className="border-border bg-popover absolute right-0 mt-2 w-52 overflow-y-auto overscroll-contain  border p-1.5 shadow-md"
             >
               <button
                 type="button"
                 role="menuitem"
                 onClick={copyAsPng}
                 disabled={isCopying}
-                className="text-popover-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-center justify-between rounded-sm px-2 py-2 text-left text-sm focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                className="text-popover-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-center justify-between  px-2 py-2 text-left text-sm focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <span className="flex min-w-0 items-center gap-2">
                   <Copy className="size-4 shrink-0" aria-hidden />
@@ -164,9 +164,15 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                 role="menuitem"
                 onClick={shareToTwitter}
                 disabled={isCopying}
-                className="text-popover-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm focus-visible:ring-2 focus-visible:outline-none"
+                className="text-popover-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-center gap-2  px-2 py-2 text-left text-sm focus-visible:ring-2 focus-visible:outline-none"
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4 fill-current">
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="size-4 fill-current"
+                  stroke="currentColor"
+                  strokeWidth={1.2}
+                >
                   <path d="M18.901 1.153h3.68l-8.04 9.19 9.458 12.504h-7.406l-5.8-7.584-6.64 7.584H.472l8.6-9.826L0 1.153h7.594l5.243 6.932zm-1.292 19.49h2.04L6.486 3.24H4.298z" />
                 </svg>
                 Share to Twitter
@@ -175,7 +181,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
           ) : null}
         </div>
 
-        <div className="border-border bg-card w-full rounded-2xl border p-4 sm:p-6 md:p-8">
+        <div className="border-border bg-card w-full  border p-4 sm:p-6 md:p-8">
           <div className="flex min-w-0 items-center gap-3 sm:gap-4">
             {profile.image ? (
               <Image
@@ -183,10 +189,10 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                 alt={profile.displayName}
                 width={64}
                 height={64}
-                className="border-border h-12 w-12 rounded-full border object-cover sm:h-16 sm:w-16"
+                className="border-border h-12 w-12  border object-cover sm:h-16 sm:w-16"
               />
             ) : (
-              <div className="border-border bg-muted text-foreground flex h-12 w-12 items-center justify-center rounded-full border text-lg font-semibold sm:h-16 sm:w-16 sm:text-xl">
+              <div className="border-border bg-muted text-foreground flex h-12 w-12 items-center justify-center  border text-lg font-semibold sm:h-16 sm:w-16 sm:text-xl">
                 {profile.displayName.slice(0, 1).toUpperCase()}
               </div>
             )}
@@ -204,10 +210,10 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       href={profile.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5 rounded-sm text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
+                      className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5  text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
                       aria-label={`${profile.displayName}'s GitHub profile`}
                     >
-                      <Github className="size-3.5 sm:size-4" aria-hidden />
+                      <Github className="size-4" aria-hidden />
                     </a>
                   ) : null}
                   {profile.twitterUrl ? (
@@ -215,13 +221,15 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       href={profile.twitterUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5 rounded-sm text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
+                      className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5  text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
                       aria-label={`${profile.displayName}'s X profile`}
                     >
                       <svg
                         viewBox="0 0 24 24"
                         aria-hidden="true"
-                        className="size-3.5 fill-current sm:size-4"
+                        className="size-4 fill-current"
+                        stroke="currentColor"
+                        strokeWidth={1.2}
                       >
                         <path d="M18.901 1.153h3.68l-8.04 9.19 9.458 12.504h-7.406l-5.8-7.584-6.64 7.584H.472l8.6-9.826L0 1.153h7.594l5.243 6.932zm-1.292 19.49h2.04L6.486 3.24H4.298z" />
                       </svg>
@@ -262,7 +270,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                   return (
                     <li
                       key={slot}
-                      className="border-border bg-background flex min-w-0 items-center justify-between gap-2 rounded-lg border px-3 py-2.5 sm:px-4 sm:py-3"
+                      className="border-border bg-background flex min-w-0 items-center justify-between gap-2  border px-3 py-2.5 sm:px-4 sm:py-3"
                     >
                       <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
                         {slot}
@@ -273,9 +281,9 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                             <Image
                               src={providerBrand.logoPath}
                               alt={model.provider}
-                              width={20}
-                              height={20}
-                              className="size-4 shrink-0 sm:size-5"
+                              width={16}
+                              height={16}
+                              className="size-4 shrink-0"
                             />
                           ) : null}
                           <span className="min-w-0 truncate">{model.name}</span>

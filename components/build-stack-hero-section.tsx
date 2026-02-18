@@ -20,7 +20,7 @@ export function BuildStackHeroSection({
   modelRows: ModelPreviewRow[]
 }) {
   return (
-    <section className="animate-in fade-in fill-mode-both border-border/80 bg-card/60 relative overflow-hidden rounded-3xl border p-5 shadow-lg backdrop-blur-sm delay-75 duration-500 sm:p-8">
+    <section className="animate-in fade-in fill-mode-both border-border/80 bg-card/60 relative overflow-hidden  border p-5 shadow-lg backdrop-blur-sm delay-75 duration-500 sm:p-8">
       <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-10">
         <div className="space-y-5">
           <p className="font-pixel text-primary text-[10px] tracking-[0.22em] uppercase sm:text-xs">
@@ -40,7 +40,7 @@ export function BuildStackHeroSection({
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href={isLoggedIn ? (profileUsername ? `/${profileUsername}` : '/') : '/auth/signin'}
-              className="bg-foreground text-background hover:bg-foreground/90 rounded-md px-4 py-2 text-sm font-medium transition"
+              className="bg-foreground text-background hover:bg-foreground/90  px-4 py-2 text-sm font-medium transition"
             >
               {isLoggedIn ? 'View your profile' : 'Sign in to personalize'}
             </Link>
