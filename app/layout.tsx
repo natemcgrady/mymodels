@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   metadataBase: resolveMetadataBase(),
   title: 'mymodels.dev',
   description: 'Share the models you use for planning, building, and debugging.',
+  icons: {
+    icon: '/favicon.png',
+  },
   openGraph: {
     title: 'mymodels.dev',
     description: 'Share the models you use for planning, building, and debugging.',
