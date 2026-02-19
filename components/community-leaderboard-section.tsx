@@ -19,7 +19,7 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+      <div className="flex flex-col gap-4 sm:gap-5">
         <LeaderboardChart
           title="Overall"
           description="Popularity across all profile categories."
