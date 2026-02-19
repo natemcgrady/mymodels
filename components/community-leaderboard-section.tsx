@@ -1,6 +1,5 @@
-import { Suspense } from 'react'
 import type { LeaderboardData } from '@/server/data/leaderboard'
-import { LeaderboardSection } from '@/components/leaderboard-section'
+import { LeaderboardChart } from '@/components/leaderboard-section'
 
 export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: LeaderboardData }) {
   return (
@@ -19,40 +18,29 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
           See which models are currently most selected across every profile.
         </p>
       </div>
-      <Suspense>
-        <LeaderboardSection
-          tabs={[
-            {
-              key: 'overall',
-              label: 'Overall',
-              title: 'Overall Top Models',
-              description: 'Popularity across all profile categories.',
-              entries: leaderboard.overall,
-            },
-            {
-              key: 'plan',
-              label: 'Plan',
-              title: 'Top Models for Plan',
-              description: 'Models selected specifically for planning work.',
-              entries: leaderboard.bySlot.plan,
-            },
-            {
-              key: 'build',
-              label: 'Build',
-              title: 'Top Models for Build',
-              description: 'Models chosen for coding and implementation.',
-              entries: leaderboard.bySlot.build,
-            },
-            {
-              key: 'debug',
-              label: 'Debug',
-              title: 'Top Models for Debug',
-              description: 'Models favored for troubleshooting and fixes.',
-              entries: leaderboard.bySlot.debug,
-            },
-          ]}
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+        <LeaderboardChart
+          title="Overall"
+          description="Popularity across all profile categories."
+          entries={leaderboard.overall}
         />
-      </Suspense>
+        <LeaderboardChart
+          title="Plan"
+          description="Models selected specifically for planning work."
+          entries={leaderboard.bySlot.plan}
+        />
+        <LeaderboardChart
+          title="Build"
+          description="Models chosen for coding and implementation."
+          entries={leaderboard.bySlot.build}
+        />
+        <LeaderboardChart
+          title="Debug"
+          description="Models favored for troubleshooting and fixes."
+          entries={leaderboard.bySlot.debug}
+        />
+      </div>
     </section>
   )
 }
