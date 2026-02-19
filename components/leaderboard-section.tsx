@@ -87,13 +87,15 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm">
-      <CardHeader className="px-2 sm:px-6">
+      <CardHeader className="gap-3 px-2 sm:px-6">
+        {/* Mobile tabs: equal-width 4-column grid — avoids overflow-hidden clipping */}
         <div
           role="tablist"
           aria-label="Leaderboard category"
-          className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:hidden"
+          className="border-border/80 grid w-full sm:hidden"
+          style={{ gridTemplateColumns: `repeat(${Math.max(tabs.length, 1)}, minmax(0, 1fr))` }}
         >
-          {tabs.map((tab) => {
+          {tabs.map((tab, i) => {
             const isActive = tab.key === selectedTab?.key
             return (
               <button
@@ -102,7 +104,9 @@ export function LeaderboardSection({ tabs }: LeaderboardSectionProps) {
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`leaderboard-panel-${tab.key}`}
-                className={`border-border/80 focus-visible:ring-ring min-h-11 shrink-0 border px-4 text-sm font-semibold tracking-[0.08em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none ${
+                className={`focus-visible:ring-ring border-border/80 min-h-11 border-t border-b text-[10px] font-semibold tracking-widest uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none ${
+                  i > 0 ? 'border-l' : ''
+                } ${
                   isActive
                     ? 'bg-foreground text-background'
                     : 'bg-background/60 text-muted-foreground hover:text-foreground'

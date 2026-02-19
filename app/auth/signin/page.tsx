@@ -18,7 +18,8 @@ export default async function SignInPage() {
   return (
     <main
       id="main-content"
-      className="bg-background text-foreground flex min-h-screen flex-col items-center justify-center px-4 sm:px-6"
+      className="bg-background text-foreground flex flex-col items-center justify-center px-4 sm:px-6"
+      style={{ minHeight: 'calc(100dvh - 73px)' }}
     >
       <div className="border-border bg-card flex w-full max-w-md flex-col items-center gap-6 border p-5 text-center sm:p-8">
         <div className="space-y-2">
