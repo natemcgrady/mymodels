@@ -144,6 +144,11 @@ export async function getProfileByUsername(username: string) {
   return enrichProfile(row)
 }
 
+export async function getAllProfileUsernames() {
+  const rows = await db.select({ username: profiles.username }).from(profiles)
+  return rows.map((row) => row.username)
+}
+
 export async function getProfileSelections(profileId: number) {
   const rows = await db
     .select({

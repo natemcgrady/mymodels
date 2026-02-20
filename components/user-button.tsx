@@ -5,27 +5,67 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { User } from '@supabase/supabase-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-export function UserButton() {
+type InitialUser = {
+  id: string
+  email: string | null
+  displayName: string
+  avatarUrl: string | null
+  username: string | null
+}
+
+type UserButtonProps = {
+  initialUser?: InitialUser | null
+}
+
+export function UserButton({ initialUser = null }: UserButtonProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const supabase = useMemo(() => createClient(), [])
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<InitialUser | null>(initialUser)
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user ?? null)
-      setLoading(false)
+      if (!user) {
+        setUser(null)
+        return
+      }
+
+      setUser((current) => ({
+        id: user.id,
+        email: user.email ?? null,
+        displayName:
+          current?.displayName ??
+          (user.user_metadata?.full_name as string) ??
+          (user.user_metadata?.name as string) ??
+          user.email ??
+          'Signed in',
+        avatarUrl: current?.avatarUrl ?? (user.user_metadata?.avatar_url as string) ?? null,
+        username: current?.username ?? null,
+      }))
     })
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      const authUser = session?.user
+      setUser(
+        authUser
+          ? {
+              id: authUser.id,
+              email: authUser.email ?? null,
+              displayName:
+                (authUser.user_metadata?.full_name as string) ??
+                (authUser.user_metadata?.name as string) ??
+                authUser.email ??
+                'Signed in',
+              avatarUrl: (authUser.user_metadata?.avatar_url as string) ?? null,
+              username: null,
+            }
+          : null
+      )
       setOpen(false)
       queryClient.invalidateQueries({ queryKey: ['profile', 'me'] })
     })
@@ -35,12 +75,23 @@ export function UserButton() {
   const { data: profile } = useQuery({
     queryKey: ['profile', 'me', user?.id],
     enabled: Boolean(user),
+    initialData: user
+      ? {
+          username: user.username,
+          displayName: user.displayName,
+          image: user.avatarUrl,
+        }
+      : undefined,
     queryFn: async () => {
       const response = await fetch('/api/profile/me')
       if (!response.ok) {
-        return { username: null }
+        return { username: null, displayName: null, image: null }
       }
-      return (await response.json()) as { username: string | null }
+      return (await response.json()) as {
+        username: string | null
+        displayName: string | null
+        image: string | null
+      }
     },
     staleTime: 1000 * 60 * 10,
   })
@@ -80,18 +131,6 @@ export function UserButton() {
     router.push('/auth/signin')
   }, [router])
 
-  if (loading) {
-    return (
-      <div
-        className="border-border bg-muted h-8 w-8 animate-pulse border"
-        role="status"
-        aria-label="Loading user information"
-      >
-        <span className="sr-only">Loading…</span>
-      </div>
-    )
-  }
-
   if (!user) {
     return (
       <button
@@ -103,11 +142,8 @@ export function UserButton() {
     )
   }
 
-  const displayName =
-    (user.user_metadata?.full_name as string) ??
-    (user.user_metadata?.name as string) ??
-    user.email ??
-    'Signed in'
+  const displayName = profile?.displayName ?? user.displayName ?? user.email ?? 'Signed in'
+  const avatarUrl = profile?.image ?? user.avatarUrl
 
   return (
     <div ref={menuRef} className="relative">
@@ -119,13 +155,15 @@ export function UserButton() {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        {user.user_metadata?.avatar_url ? (
+        {avatarUrl ? (
           <Image
-            src={user.user_metadata.avatar_url as string}
+            src={avatarUrl}
             alt={displayName}
             width={32}
             height={32}
-            className=""
+            className="object-cover"
+            loading="eager"
+            unoptimized
           />
         ) : (
           <div className="bg-muted text-foreground flex h-8 w-8 items-center justify-center text-xs font-semibold">

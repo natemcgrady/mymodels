@@ -2,17 +2,21 @@ import { BuildStackHeroSection } from '@/components/build-stack-hero-section'
 import { CommunityLeaderboardSection } from '@/components/community-leaderboard-section'
 import { type ModelPreviewRow } from '@/components/example-profile-card'
 import { formatSelectionLabel, getMetadataValue, sanitizeUsername } from '@/lib/profile-utils'
-import { getLeaderboardData } from '@/server/data/leaderboard'
 import { createClient } from '@/lib/supabase/server'
+import { getLeaderboardData } from '@/server/data/leaderboard'
 import { getProfileByUserId, getProfileSelections } from '@/server/data/profiles'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
+  const leaderboardPromise = getLeaderboardData()
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
   const profile = user ? await getProfileByUserId(user.id) : null
   const selections = profile ? await getProfileSelections(profile.id) : null
+
   const metadata = user?.user_metadata ?? null
   const metadataDisplayName =
     getMetadataValue(metadata, 'full_name') ?? getMetadataValue(metadata, 'name')
@@ -56,7 +60,7 @@ export default async function Home() {
         { label: 'Build', value: 'GPT-5.3 Codex' },
         { label: 'Debug', value: 'Composer 1.5' },
       ]
-  const leaderboard = await getLeaderboardData()
+  const leaderboard = await leaderboardPromise
 
   return (
     <main

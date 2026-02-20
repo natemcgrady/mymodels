@@ -19,6 +19,9 @@ export function BuildStackHeroSection({
   profile: HeroProfile
   modelRows: ModelPreviewRow[]
 }) {
+  const ctaHref = isLoggedIn ? (profileUsername ? `/${profileUsername}` : '/') : '/auth/signin'
+  const ctaLabel = isLoggedIn ? 'View your profile' : 'Sign in to personalize'
+
   return (
     <section className="border-border/80 bg-card/60 relative overflow-hidden border p-5 shadow-lg backdrop-blur-sm sm:p-8">
       <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-10">
@@ -39,10 +42,10 @@ export function BuildStackHeroSection({
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              href={isLoggedIn ? (profileUsername ? `/${profileUsername}` : '/') : '/auth/signin'}
-              className="bg-foreground text-background hover:bg-foreground/90 px-4 py-2 text-sm font-medium transition"
+              href={ctaHref}
+              className="bg-foreground text-background hover:bg-foreground/90 inline-flex min-w-46 items-center justify-center px-4 py-2 text-center text-sm font-medium transition"
             >
-              {isLoggedIn ? 'View your profile' : 'Sign in to personalize'}
+              {ctaLabel}
             </Link>
           </div>
         </div>

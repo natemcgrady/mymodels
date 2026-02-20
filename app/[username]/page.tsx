@@ -1,12 +1,18 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { getModelCatalog } from '@/server/data/model-catalog'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
-import { ModelSelectionForm } from '@/components/model-selection-form'
 import { ProfileCard } from '@/components/profile-card'
+import { ProfileEditorGate } from '@/components/profile-editor-gate'
 
 type UserProfilePageProps = {
   params: Promise<{ username: string }>
+}
+
+export const revalidate = 300
+export const dynamic = 'force-static'
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  return []
 }
 
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
@@ -21,14 +27,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
     notFound()
   }
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  const canEdit = user?.id === profile.userId
-
   const selections = await getProfileSelections(profile.id)
-  const catalog = canEdit ? await getModelCatalog() : []
   const modelSlots: Array<{
     slot: 'Plan' | 'Build' | 'Debug'
     model: (typeof selections)[keyof typeof selections]
@@ -55,17 +54,14 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             }}
             modelSlots={modelSlots}
             modelEditor={
-              canEdit ? (
-                <ModelSelectionForm
-                  username={profile.username}
-                  catalog={catalog}
-                  initialSelections={{
-                    plan: selections.plan?.id ?? null,
-                    build: selections.build?.id ?? null,
-                    debug: selections.debug?.id ?? null,
-                  }}
-                />
-              ) : null
+              <ProfileEditorGate
+                username={profile.username}
+                initialSelections={{
+                  plan: selections.plan?.id ?? null,
+                  build: selections.build?.id ?? null,
+                  debug: selections.debug?.id ?? null,
+                }}
+              />
             }
           />
         </div>

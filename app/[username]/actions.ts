@@ -58,4 +58,5 @@ export async function updateProfileModels(formData: FormData) {
   })
 
   revalidatePath(`/${profile.username}`)
+  revalidatePath('/')
 }

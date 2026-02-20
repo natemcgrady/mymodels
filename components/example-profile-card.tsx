@@ -19,6 +19,10 @@ export function ExampleProfileCard({
   }
   modelRows: ModelPreviewRow[]
 }) {
+  const helperText = isLoggedIn
+    ? 'Your live profile preview reflects your current model stack selections.'
+    : 'Sign in to replace this example with your real avatar and model stack.'
+
   return (
     <article className="border-border/85 bg-background/85 relative overflow-hidden border p-4 shadow-md sm:p-6">
       <div className="relative space-y-5">
@@ -73,11 +77,7 @@ export function ExampleProfileCard({
           ))}
         </div>
 
-        {!isLoggedIn ? (
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            Sign in to replace this example with your real avatar and model stack.
-          </p>
-        ) : null}
+        <p className="text-muted-foreground min-h-10 text-xs sm:text-sm">{helperText}</p>
       </div>
     </article>
   )
