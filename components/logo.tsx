@@ -1,35 +1,29 @@
-'use client'
-
-import Image from 'next/image'
-import faviconLight from '@/public/favicon-light.svg'
-import faviconDark from '@/public/favicon-dark.svg'
-
 type LogoProps = {
   size?: number
   className?: string
 }
 
 export function Logo({ size = 100, className }: LogoProps) {
-  const wrapperClassName = className ? `inline-flex ${className}` : 'inline-flex'
+  const wrapperClassName = className ? `inline-flex shrink-0 ${className}` : 'inline-flex shrink-0'
 
   return (
-    <span className={wrapperClassName}>
-      <Image
-        src={faviconLight}
-        alt=""
-        aria-hidden
+    <span className={wrapperClassName} aria-hidden>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 500 500"
         width={size}
         height={size}
-        className="block dark:hidden"
-      />
-      <Image
-        src={faviconDark}
-        alt=""
-        aria-hidden
-        width={size}
-        height={size}
-        className="hidden dark:block"
-      />
+        className="block text-foreground"
+      >
+        <path
+          fill="currentColor"
+          d="M115.994 451h-64.39V51.353h398.34v399.25h-78.79V130.928h-80.34v6.625c0 68.987-.046 137.975.101 206.962.01 4.73-1.128 6.262-6.045 6.207-22.66-.254-45.323-.112-67.986-.112h-5.465V131.057h-80.411V451z"
+        />
+        <path
+          fill="currentColor"
+          d="M151 253.997v-22.26h39.732v38.595H151zm169.084-22.607h30.49v38.83h-39.19v-38.83z"
+        />
+      </svg>
     </span>
   )
 }
