@@ -19,6 +19,8 @@ type UserButtonProps = {
   initialUser?: InitialUser | null
 }
 
+const PROFILE_QUERY_KEY = ['profile', 'me', 'header'] as const
+
 export function UserButton({ initialUser = null }: UserButtonProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -28,7 +30,7 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
   const menuRef = useRef<HTMLDivElement>(null)
 
   const { data: profile, refetch } = useQuery({
-    queryKey: ['profile', 'me', 'header'],
+    queryKey: PROFILE_QUERY_KEY,
     initialData: initialUser
       ? {
           username: initialUser.username,
@@ -37,7 +39,9 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
         }
       : undefined,
     queryFn: async () => {
-      const response = await fetch('/api/profile/me')
+      const response = await fetch('/api/profile/me', {
+        cache: 'no-store',
+      })
       if (!response.ok) {
         return null
       }
@@ -60,12 +64,11 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
       setOpen(false)
-      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] })
-      void refetch()
+      queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY })
       router.refresh()
     })
     return () => subscription.unsubscribe()
-  }, [queryClient, refetch, router, supabase])
+  }, [queryClient, router, supabase])
 
   useEffect(() => {
     if (!open) return
@@ -94,7 +97,8 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
     setOpen(false)
-    queryClient.invalidateQueries({ queryKey: ['profile', 'me'] })
+    queryClient.setQueryData(PROFILE_QUERY_KEY, null)
+    queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY })
     void refetch()
     router.refresh()
   }, [queryClient, refetch, router, supabase])
@@ -158,6 +162,7 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
             Profile
           </Link>
           <button
+            type="button"
             onClick={signOut}
             className="text-foreground hover:bg-muted focus-visible:ring-ring px-3 py-2 text-left text-sm transition focus-visible:ring-2 focus-visible:outline-none"
             role="menuitem"
