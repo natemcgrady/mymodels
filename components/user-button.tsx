@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -21,71 +21,25 @@ type UserButtonProps = {
 
 export function UserButton({ initialUser = null }: UserButtonProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const queryClient = useQueryClient()
   const supabase = useMemo(() => createClient(), [])
-  const [user, setUser] = useState<InitialUser | null>(initialUser)
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        setUser(null)
-        return
-      }
-
-      setUser((current) => ({
-        id: user.id,
-        email: user.email ?? null,
-        displayName:
-          current?.displayName ??
-          (user.user_metadata?.full_name as string) ??
-          (user.user_metadata?.name as string) ??
-          user.email ??
-          'Signed in',
-        avatarUrl: current?.avatarUrl ?? (user.user_metadata?.avatar_url as string) ?? null,
-        username: current?.username ?? null,
-      }))
-    })
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const authUser = session?.user
-      setUser(
-        authUser
-          ? {
-              id: authUser.id,
-              email: authUser.email ?? null,
-              displayName:
-                (authUser.user_metadata?.full_name as string) ??
-                (authUser.user_metadata?.name as string) ??
-                authUser.email ??
-                'Signed in',
-              avatarUrl: (authUser.user_metadata?.avatar_url as string) ?? null,
-              username: null,
-            }
-          : null
-      )
-      setOpen(false)
-      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] })
-    })
-    return () => subscription.unsubscribe()
-  }, [queryClient, supabase])
-
-  const { data: profile } = useQuery({
-    queryKey: ['profile', 'me', user?.id],
-    enabled: Boolean(user),
-    initialData: user
+  const { data: profile, refetch } = useQuery({
+    queryKey: ['profile', 'me', 'header'],
+    initialData: initialUser
       ? {
-          username: user.username,
-          displayName: user.displayName,
-          image: user.avatarUrl,
+          username: initialUser.username,
+          displayName: initialUser.displayName,
+          image: initialUser.avatarUrl,
         }
       : undefined,
     queryFn: async () => {
       const response = await fetch('/api/profile/me')
       if (!response.ok) {
-        return { username: null, displayName: null, image: null }
+        return null
       }
       return (await response.json()) as {
         username: string | null
@@ -93,8 +47,25 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
         image: string | null
       }
     },
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60,
+    refetchOnMount: 'always',
   })
+
+  useEffect(() => {
+    void refetch()
+  }, [pathname, refetch])
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] })
+      void refetch()
+      router.refresh()
+    })
+    return () => subscription.unsubscribe()
+  }, [queryClient, refetch, router, supabase])
 
   useEffect(() => {
     if (!open) return
@@ -124,14 +95,15 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
     await supabase.auth.signOut()
     setOpen(false)
     queryClient.invalidateQueries({ queryKey: ['profile', 'me'] })
+    void refetch()
     router.refresh()
-  }, [queryClient, router, supabase])
+  }, [queryClient, refetch, router, supabase])
 
   const signIn = useCallback(() => {
     router.push('/auth/signin')
   }, [router])
 
-  if (!user) {
+  if (!profile?.username) {
     return (
       <button
         onClick={signIn}
@@ -142,8 +114,8 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
     )
   }
 
-  const displayName = profile?.displayName ?? user.displayName ?? user.email ?? 'Signed in'
-  const avatarUrl = profile?.image ?? user.avatarUrl
+  const displayName = profile.displayName ?? initialUser?.displayName ?? initialUser?.email ?? 'Signed in'
+  const avatarUrl = profile?.image ?? null
 
   return (
     <div ref={menuRef} className="relative">
@@ -178,7 +150,7 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
           className="border-border bg-card absolute right-0 z-20 mt-2 flex w-40 flex-col gap-1 overflow-y-auto overscroll-contain border p-1 shadow-lg"
         >
           <Link
-            href={profile?.username ? `/${profile.username}` : '/'}
+            href={`/${profile.username}`}
             onClick={() => setOpen(false)}
             className="text-foreground hover:bg-muted px-3 py-2 text-sm transition"
             role="menuitem"
