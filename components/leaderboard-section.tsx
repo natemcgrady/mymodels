@@ -25,9 +25,10 @@ const CHART_COLORS = [
 ]
 
 const MAX_LABEL_CHARS = 16
+const MAX_CHART_ITEMS = 5
 
 export function LeaderboardChart({ title, description, entries }: LeaderboardChartProps) {
-  const chartData = entries.map((entry, index) => ({
+  const chartData = entries.slice(0, MAX_CHART_ITEMS).map((entry, index) => ({
     modelKey: `model-${entry.modelId}`,
     model: entry.modelName,
     provider: entry.provider,
