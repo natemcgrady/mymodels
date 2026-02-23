@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { Check, ChevronDown, Copy, Github, Loader2, Share2 } from 'lucide-react'
 import { cloneElement, isValidElement, type ReactNode, useEffect, useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -30,11 +31,23 @@ type ProfileCardProps = {
 
 export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardProps) {
   const shareMenuRef = useRef<HTMLDivElement>(null)
-  const hasPrefetchedEditorRef = useRef(false)
   const [isCopying, setIsCopying] = useState(false)
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const { resolvedTheme } = useTheme()
+  const { data: editorPermission } = useQuery({
+    queryKey: ['profile', 'editor-data', profile.username],
+    queryFn: async () => {
+      const response = await fetch(`/api/profile/editor?username=${encodeURIComponent(profile.username)}`)
+      if (!response.ok) {
+        throw new Error('Could not load editor data')
+      }
+      return (await response.json()) as { canEdit?: boolean }
+    },
+    enabled: Boolean(modelEditor),
+    staleTime: 1000 * 60 * 5,
+  })
+  const canEditProfile = Boolean(modelEditor && editorPermission?.canEdit)
   const populatedModelSlots = modelSlots.filter(
     (slot): slot is ModelSlot & { model: NonNullable<ModelSlot['model']> } => Boolean(slot.model)
   )
@@ -100,16 +113,11 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
     setIsShareMenuOpen(false)
   }
 
-  const prefetchEditorData = () => {
-    if (!modelEditor || hasPrefetchedEditorRef.current) {
-      return
+  useEffect(() => {
+    if (!canEditProfile && isEditing) {
+      setIsEditing(false)
     }
-
-    hasPrefetchedEditorRef.current = true
-    void fetch(`/api/profile/editor?username=${encodeURIComponent(profile.username)}`).catch(() => {
-      hasPrefetchedEditorRef.current = false
-    })
-  }
+  }, [canEditProfile, isEditing])
 
   useEffect(() => {
     if (!isShareMenuOpen) {
@@ -262,14 +270,12 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               <h2 className="text-muted-foreground text-xs font-medium tracking-[0.14em] uppercase sm:text-sm sm:tracking-[0.16em]">
                 Currently using
               </h2>
-              {modelEditor ? (
+              {modelEditor && canEditProfile ? (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setIsEditing((current) => !current)}
-                  onPointerEnter={prefetchEditorData}
-                  onFocus={prefetchEditorData}
                   data-capture-exclude="true"
                 >
                   {isEditing ? 'Cancel' : 'Edit'}
