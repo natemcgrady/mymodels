@@ -1,6 +1,6 @@
 'use client'
 
-import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -24,7 +24,6 @@ const CHART_COLORS = [
   'var(--chart-5)',
 ]
 
-const MAX_LABEL_CHARS = 16
 const MAX_CHART_ITEMS = 5
 
 export function LeaderboardChart({ title, description, entries }: LeaderboardChartProps) {
@@ -36,15 +35,11 @@ export function LeaderboardChart({ title, description, entries }: LeaderboardCha
     fill: CHART_COLORS[index % CHART_COLORS.length],
   }))
 
-  const tickFormatter = (value: string) =>
-    value.length > MAX_LABEL_CHARS ? value.slice(0, MAX_LABEL_CHARS - 1) + '\u2026' : value
-
   const chartConfig: ChartConfig = {
     votes: { label: 'Picks' },
     label: { color: 'hsl(0 0% 100%)' },
     ...chartData.reduce<Record<string, { label: string; color: string }>>((acc, item) => {
       acc[item.modelKey] = { label: item.model, color: item.fill }
-      acc[item.model] = { label: tickFormatter(item.model), color: item.fill }
       return acc
     }, {}),
   }
@@ -59,34 +54,38 @@ export function LeaderboardChart({ title, description, entries }: LeaderboardCha
         {chartData.length === 0 ? (
           <p className="text-muted-foreground text-sm">No model selections yet.</p>
         ) : (
-          <ChartContainer config={chartConfig}>
-            <BarChart accessibilityLayer data={chartData} margin={{ bottom: 32 }}>
-              <XAxis dataKey="model" hide />
-              <YAxis dataKey="votes" type="number" hide />
-              <ChartTooltip
-                cursor={false}
-                content={
-                  <ChartTooltipContent
-                    hideLabel
-                    labelFormatter={(_, payload) => payload?.[0]?.payload?.model}
-                  />
-                }
-              />
-              <Bar dataKey="votes" fill="var(--chart-1)" radius={8}>
-                {chartData.map((item) => (
-                  <Cell key={item.modelKey} fill={item.fill} />
-                ))}
-                <LabelList
-                  dataKey="model"
-                  position="bottom"
-                  offset={8}
-                  formatter={(value: string) => tickFormatter(value)}
-                  className="fill-muted-foreground"
-                  fontSize={12}
+          <div className="space-y-3">
+            <ChartContainer config={chartConfig} className="aspect-auto h-44 w-full">
+              <BarChart accessibilityLayer data={chartData} margin={{ top: 8, right: 8, left: 8 }}>
+                <XAxis dataKey="model" hide />
+                <YAxis dataKey="votes" type="number" hide />
+                <ChartTooltip
+                  cursor={false}
+                  content={
+                    <ChartTooltipContent
+                      hideLabel
+                      labelFormatter={(_, payload) => payload?.[0]?.payload?.model}
+                    />
+                  }
                 />
-              </Bar>
-            </BarChart>
-          </ChartContainer>
+                <Bar dataKey="votes" fill="var(--chart-1)" radius={8}>
+                  {chartData.map((item) => (
+                    <Cell key={item.modelKey} fill={item.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+            <ul
+              className="text-muted-foreground grid gap-2 text-center text-[11px] leading-tight sm:text-xs"
+              style={{ gridTemplateColumns: `repeat(${chartData.length}, minmax(0, 1fr))` }}
+            >
+              {chartData.map((item) => (
+                <li key={item.modelKey} className="min-w-0 px-1 wrap-break-word" title={item.model}>
+                  {item.model}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </CardContent>
     </Card>

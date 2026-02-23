@@ -29,7 +29,11 @@ type ModelSelectionFormProps = {
     build: number | null
     debug: number | null
   }
-  onSave?: () => void
+  onSave?: (nextSelections?: {
+    plan: number | null
+    build: number | null
+    debug: number | null
+  }) => void
 }
 
 type SlotConfig = {
@@ -61,11 +65,17 @@ function groupByProvider(catalog: CatalogModel[]) {
   }, {})
 }
 
-function SaveButton() {
+function parseSelectionId(value: string) {
+  if (!value) return null
+  const parsed = Number(value)
+  return Number.isNaN(parsed) ? null : parsed
+}
+
+function SaveButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus()
 
   return (
-    <Button type="submit" disabled={pending}>
+    <Button type="submit" disabled={pending || disabled}>
       {pending ? 'Saving…' : 'Save selections'}
     </Button>
   )
@@ -78,17 +88,31 @@ export function ModelSelectionForm({
   onSave,
 }: ModelSelectionFormProps) {
   const catalogByProvider = useMemo(() => groupByProvider(catalog), [catalog])
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [values, setValues] = useState<Record<'plan' | 'build' | 'debug', string>>({
     plan: initialSelections.plan ? String(initialSelections.plan) : '',
     build: initialSelections.build ? String(initialSelections.build) : '',
     debug: initialSelections.debug ? String(initialSelections.debug) : '',
   })
+  const hasChanges =
+    values.plan !== (initialSelections.plan ? String(initialSelections.plan) : '') ||
+    values.build !== (initialSelections.build ? String(initialSelections.build) : '') ||
+    values.debug !== (initialSelections.debug ? String(initialSelections.debug) : '')
 
   return (
     <form
       action={async (formData) => {
-        await updateProfileModels(formData)
-        onSave?.()
+        setSubmitError(null)
+        try {
+          await updateProfileModels(formData)
+          onSave?.({
+            plan: parseSelectionId(values.plan),
+            build: parseSelectionId(values.build),
+            debug: parseSelectionId(values.debug),
+          })
+        } catch (error) {
+          setSubmitError(error instanceof Error ? error.message : 'Could not save selections.')
+        }
       }}
       className="space-y-3"
     >
@@ -154,8 +178,16 @@ export function ModelSelectionForm({
         })}
       </ul>
 
-      <div className="pt-1">
-        <SaveButton />
+      <div className="space-y-2 pt-1">
+        {submitError ? (
+          <p className="text-destructive text-xs sm:text-sm" role="alert">
+            {submitError}
+          </p>
+        ) : null}
+        <SaveButton disabled={!hasChanges} />
+        {!hasChanges ? (
+          <p className="text-muted-foreground text-xs">Update at least one slot to save changes.</p>
+        ) : null}
       </div>
     </form>
   )

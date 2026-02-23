@@ -118,7 +118,8 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
     )
   }
 
-  const displayName = profile.displayName ?? initialUser?.displayName ?? initialUser?.email ?? 'Signed in'
+  const displayName =
+    profile.displayName ?? initialUser?.displayName ?? initialUser?.email ?? 'Signed in'
   const avatarUrl = profile?.image ?? null
 
   return (

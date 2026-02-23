@@ -13,7 +13,7 @@ export function Logo({ size = 100, className }: LogoProps) {
         viewBox="0 0 500 500"
         width={size}
         height={size}
-        className="block text-foreground"
+        className="text-foreground block"
       >
         <path
           fill="currentColor"

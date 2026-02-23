@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { Check, ChevronDown, Copy, Github, Loader2, Share2 } from 'lucide-react'
-import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { cloneElement, isValidElement, type ReactNode, useEffect, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -30,10 +30,16 @@ type ProfileCardProps = {
 
 export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardProps) {
   const shareMenuRef = useRef<HTMLDivElement>(null)
+  const hasPrefetchedEditorRef = useRef(false)
   const [isCopying, setIsCopying] = useState(false)
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const { resolvedTheme } = useTheme()
+  const renderedModelEditor = isValidElement<{ onSave?: () => void }>(modelEditor)
+    ? cloneElement(modelEditor, {
+        onSave: () => setIsEditing(false),
+      })
+    : modelEditor
 
   const copyAsPng = async () => {
     if (isCopying) {
@@ -89,6 +95,17 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
     url.searchParams.set('url', `${window.location.origin}/${profile.username}`)
     window.open(url.toString(), '_blank', 'noopener,noreferrer')
     setIsShareMenuOpen(false)
+  }
+
+  const prefetchEditorData = () => {
+    if (!modelEditor || hasPrefetchedEditorRef.current) {
+      return
+    }
+
+    hasPrefetchedEditorRef.current = true
+    void fetch(`/api/profile/editor?username=${encodeURIComponent(profile.username)}`).catch(() => {
+      hasPrefetchedEditorRef.current = false
+    })
   }
 
   useEffect(() => {
@@ -248,6 +265,8 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                   variant="outline"
                   size="sm"
                   onClick={() => setIsEditing((current) => !current)}
+                  onPointerEnter={prefetchEditorData}
+                  onFocus={prefetchEditorData}
                   data-capture-exclude="true"
                 >
                   {isEditing ? 'Cancel' : 'Edit'}
@@ -255,9 +274,9 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               ) : null}
             </div>
 
-            {isEditing && modelEditor ? (
+            {isEditing && renderedModelEditor ? (
               <div className="mt-4" data-capture-exclude="true">
-                {modelEditor}
+                {renderedModelEditor}
               </div>
             ) : (
               <ul className="mt-4 space-y-3">

@@ -3,11 +3,22 @@ import { MODEL_CATALOG } from '@/lib/model-catalog'
 import { modelCatalog } from '@/server/db/schema'
 import { asc } from 'drizzle-orm'
 
+let ensureModelCatalogPromise: Promise<void> | null = null
+
 export async function ensureModelCatalog() {
-  await db
-    .insert(modelCatalog)
-    .values(MODEL_CATALOG)
-    .onConflictDoNothing({ target: [modelCatalog.provider, modelCatalog.name] })
+  if (!ensureModelCatalogPromise) {
+    ensureModelCatalogPromise = db
+      .insert(modelCatalog)
+      .values(MODEL_CATALOG)
+      .onConflictDoNothing({ target: [modelCatalog.provider, modelCatalog.name] })
+      .then(() => undefined)
+      .catch((error) => {
+        ensureModelCatalogPromise = null
+        throw error
+      })
+  }
+
+  await ensureModelCatalogPromise
 }
 
 export async function getModelCatalog() {
