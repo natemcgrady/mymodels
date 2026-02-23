@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { createProfileSlotRecord, PROFILE_SLOT_CONFIG } from '@/lib/profile-slots'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
 import { ProfileCard } from '@/components/profile-card'
 import { ProfileEditorGate } from '@/components/profile-editor-gate'
@@ -28,14 +29,10 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
   }
 
   const selections = await getProfileSelections(profile.id)
-  const modelSlots: Array<{
-    slot: 'Plan' | 'Build' | 'Debug'
-    model: (typeof selections)[keyof typeof selections]
-  }> = [
-    { slot: 'Plan', model: selections.plan },
-    { slot: 'Build', model: selections.build },
-    { slot: 'Debug', model: selections.debug },
-  ]
+  const modelSlots = PROFILE_SLOT_CONFIG.map(({ id, label }) => ({
+    slot: label,
+    model: selections[id],
+  }))
 
   return (
     <main
@@ -56,11 +53,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             modelEditor={
               <ProfileEditorGate
                 username={profile.username}
-                initialSelections={{
-                  plan: selections.plan?.id ?? null,
-                  build: selections.build?.id ?? null,
-                  debug: selections.debug?.id ?? null,
-                }}
+                initialSelections={createProfileSlotRecord((slot) => selections[slot]?.id ?? null)}
               />
             }
           />

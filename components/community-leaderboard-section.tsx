@@ -1,4 +1,8 @@
 import type { LeaderboardData } from '@/server/data/leaderboard'
+import {
+  PROFILE_SLOT_CONFIG,
+  PROFILE_SLOT_LEADERBOARD_DESCRIPTIONS,
+} from '@/lib/profile-slots'
 import { LeaderboardChart } from '@/components/leaderboard-section'
 
 export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: LeaderboardData }) {
@@ -25,21 +29,14 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
           description="Popularity across all profile categories."
           entries={leaderboard.overall}
         />
-        <LeaderboardChart
-          title="Plan"
-          description="Models selected specifically for planning work."
-          entries={leaderboard.bySlot.plan}
-        />
-        <LeaderboardChart
-          title="Build"
-          description="Models chosen for coding and implementation."
-          entries={leaderboard.bySlot.build}
-        />
-        <LeaderboardChart
-          title="Debug"
-          description="Models favored for troubleshooting and fixes."
-          entries={leaderboard.bySlot.debug}
-        />
+        {PROFILE_SLOT_CONFIG.map((slot) => (
+          <LeaderboardChart
+            key={slot.id}
+            title={slot.label}
+            description={PROFILE_SLOT_LEADERBOARD_DESCRIPTIONS[slot.id]}
+            entries={leaderboard.bySlot[slot.id]}
+          />
+        ))}
       </div>
     </section>
   )

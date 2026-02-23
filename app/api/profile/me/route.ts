@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createProfileSlotRecord } from '@/lib/profile-slots'
 import { createClient } from '@/lib/supabase/server'
 import { getProfileByUserId, getProfileSelections } from '@/server/data/profiles'
 
@@ -24,11 +25,7 @@ export async function GET() {
         user.email ??
         null,
       image: profile?.image ?? (user.user_metadata?.avatar_url as string) ?? null,
-      selections: {
-        plan: selections?.plan?.name ?? null,
-        build: selections?.build?.name ?? null,
-        debug: selections?.debug?.name ?? null,
-      },
+      selections: createProfileSlotRecord((slot) => selections?.[slot]?.name ?? null),
     },
     {
       headers: {

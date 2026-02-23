@@ -1,21 +1,20 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import {
+  PROFILE_SLOT_CONFIG,
+  PROFILE_SLOT_VALUES,
+  type ProfileSlotRecord,
+} from '@/lib/profile-slots'
 import { ModelSelectionForm } from '@/components/model-selection-form'
 import { Button } from '@/components/ui/button'
 
+type ModelSelections = ProfileSlotRecord<number | null>
+
 type ProfileEditorGateProps = {
   username: string
-  initialSelections: {
-    plan: number | null
-    build: number | null
-    debug: number | null
-  }
-  onSave?: (nextSelections?: {
-    plan: number | null
-    build: number | null
-    debug: number | null
-  }) => void
+  initialSelections: ModelSelections
+  onSave?: (nextSelections?: ModelSelections) => void
 }
 
 type CatalogModel = {
@@ -30,7 +29,7 @@ type EditorDataResponse = {
 }
 
 const initialSelectionsKey = (s: ProfileEditorGateProps['initialSelections']) =>
-  `${s.plan}-${s.build}-${s.debug}`
+  PROFILE_SLOT_VALUES.map((slot) => s[slot] ?? '').join('-')
 
 export function ProfileEditorGate({ username, initialSelections, onSave }: ProfileEditorGateProps) {
   const { data, isPending, isError, refetch } = useQuery({
@@ -50,9 +49,9 @@ export function ProfileEditorGate({ username, initialSelections, onSave }: Profi
       <div className="space-y-3" aria-live="polite" aria-busy="true">
         <p className="text-muted-foreground text-xs sm:text-sm">Loading model editor…</p>
         <ul className="space-y-3">
-          {['plan', 'build', 'debug'].map((slot) => (
+          {PROFILE_SLOT_CONFIG.map((slot) => (
             <li
-              key={slot}
+              key={slot.id}
               className="border-border/70 bg-background/70 flex items-center justify-between gap-3 border px-3 py-3 sm:px-4"
             >
               <div className="bg-muted h-3 w-14 animate-pulse rounded" />

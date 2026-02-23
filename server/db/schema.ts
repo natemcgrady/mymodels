@@ -9,6 +9,7 @@ import {
   pgEnum,
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
+import { PROFILE_SLOT_VALUES } from '@/lib/profile-slots'
 
 // ============================================================================
 // MyModels Domain Tables
@@ -16,7 +17,7 @@ import {
 // Users and sessions are managed by Supabase Auth (auth.users).
 // profiles.userId references auth.users.id (UUID).
 
-export const profileSlot = pgEnum('profile_slot', ['plan', 'build', 'debug'])
+export const profileSlot = pgEnum('profile_slot', PROFILE_SLOT_VALUES)
 
 export const profiles = pgTable('profiles', {
   id: serial('id').primaryKey(),

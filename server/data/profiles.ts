@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { createProfileSlotRecord, PROFILE_SLOT_VALUES, type ProfileSlot } from '@/lib/profile-slots'
 import { modelCatalog, profileModelSelections, profiles } from '@/server/db/schema'
 import { and, eq, inArray } from 'drizzle-orm'
 
@@ -159,12 +160,12 @@ export async function getProfileSelections(profileId: number) {
     .innerJoin(modelCatalog, eq(profileModelSelections.modelId, modelCatalog.id))
     .where(eq(profileModelSelections.profileId, profileId))
 
-  return rows.reduce<Record<'plan' | 'build' | 'debug', typeof modelCatalog.$inferSelect | null>>(
+  return rows.reduce<Record<ProfileSlot, typeof modelCatalog.$inferSelect | null>>(
     (acc, row) => {
       acc[row.slot] = row.model
       return acc
     },
-    { plan: null, build: null, debug: null }
+    createProfileSlotRecord(() => null)
   )
 }
 
@@ -173,7 +174,7 @@ export async function upsertProfileSelections({
   selections,
 }: {
   profileId: number
-  selections: Partial<Record<'plan' | 'build' | 'debug', number | null>>
+  selections: Partial<Record<ProfileSlot, number | null>>
 }) {
   const requestedIds = Object.values(selections).filter((value): value is number => Boolean(value))
   if (requestedIds.length > 0) {
@@ -186,8 +187,7 @@ export async function upsertProfileSelections({
     }
   }
 
-  const slots: Array<'plan' | 'build' | 'debug'> = ['plan', 'build', 'debug']
-  for (const slot of slots) {
+  for (const slot of PROFILE_SLOT_VALUES) {
     if (!(slot in selections)) continue
     const modelId = selections[slot]
     if (!modelId) {

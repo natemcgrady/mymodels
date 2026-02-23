@@ -1,8 +1,7 @@
 import { db } from '@/lib/db'
+import { PROFILE_SLOT_VALUES, type ProfileSlot } from '@/lib/profile-slots'
 import { modelCatalog, profileModelSelections, profiles } from '@/server/db/schema'
 import { asc, desc, eq, sql } from 'drizzle-orm'
-
-type Slot = 'plan' | 'build' | 'debug'
 
 export type LeaderboardEntry = {
   modelId: number
@@ -14,12 +13,12 @@ export type LeaderboardEntry = {
 export type LeaderboardData = {
   totalProfiles: number
   overall: LeaderboardEntry[]
-  bySlot: Record<Slot, LeaderboardEntry[]>
+  bySlot: Record<ProfileSlot, LeaderboardEntry[]>
 }
 
 const voteCount = sql<number>`count(${profileModelSelections.modelId})`.mapWith(Number)
 
-async function getLeaderboardForSlot(slot: Slot | null, limit: number) {
+async function getLeaderboardForSlot(slot: ProfileSlot | null, limit: number) {
   const baseQuery = db
     .select({
       modelId: modelCatalog.id,
@@ -39,21 +38,17 @@ async function getLeaderboardForSlot(slot: Slot | null, limit: number) {
 }
 
 export async function getLeaderboardData(limit = 8): Promise<LeaderboardData> {
-  const [overall, plan, build, debug, totalProfilesResult] = await Promise.all([
+  const [overall, slotEntries, totalProfilesResult] = await Promise.all([
     getLeaderboardForSlot(null, limit),
-    getLeaderboardForSlot('plan', limit),
-    getLeaderboardForSlot('build', limit),
-    getLeaderboardForSlot('debug', limit),
+    Promise.all(
+      PROFILE_SLOT_VALUES.map(async (slot) => [slot, await getLeaderboardForSlot(slot, limit)] as const)
+    ),
     db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(profiles),
   ])
 
   return {
     totalProfiles: totalProfilesResult[0]?.count ?? 0,
     overall,
-    bySlot: {
-      plan,
-      build,
-      debug,
-    },
+    bySlot: Object.fromEntries(slotEntries) as Record<ProfileSlot, LeaderboardEntry[]>,
   }
 }

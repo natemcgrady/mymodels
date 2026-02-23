@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { getProviderBrand } from '@/lib/provider-brand'
 
 type ModelSlot = {
-  slot: 'Plan' | 'Build' | 'Debug'
+  slot: string
   model: {
     name: string
     provider: string
@@ -35,6 +35,9 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const { resolvedTheme } = useTheme()
+  const populatedModelSlots = modelSlots.filter(
+    (slot): slot is ModelSlot & { model: NonNullable<ModelSlot['model']> } => Boolean(slot.model)
+  )
   const renderedModelEditor = isValidElement<{ onSave?: () => void }>(modelEditor)
     ? cloneElement(modelEditor, {
         onSave: () => setIsEditing(false),
@@ -280,7 +283,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               </div>
             ) : (
               <ul className="mt-4 space-y-3">
-                {modelSlots.map(({ slot, model }) => {
+                {populatedModelSlots.map(({ slot, model }) => {
                   const providerBrand = model ? getProviderBrand(model.provider) : null
 
                   return (
@@ -291,28 +294,27 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
                         {slot}
                       </span>
-                      {model ? (
-                        <span className="text-foreground flex min-w-0 items-center gap-2 text-xs sm:text-sm">
-                          {providerBrand?.logoPath ? (
-                            <Image
-                              src={providerBrand.logoPath}
-                              alt={model.provider}
-                              width={20}
-                              height={20}
-                              sizes="20px"
-                              className="size-4 shrink-0 sm:size-5"
-                            />
-                          ) : null}
-                          <span className="min-w-0 truncate">{model.name}</span>
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground text-xs sm:text-sm">
-                          Not selected
-                        </span>
-                      )}
+                      <span className="text-foreground flex min-w-0 items-center gap-2 text-xs sm:text-sm">
+                        {providerBrand?.logoPath ? (
+                          <Image
+                            src={providerBrand.logoPath}
+                            alt={model.provider}
+                            width={20}
+                            height={20}
+                            sizes="20px"
+                            className="size-4 shrink-0 sm:size-5"
+                          />
+                        ) : null}
+                        <span className="min-w-0 truncate">{model.name}</span>
+                      </span>
                     </li>
                   )
                 })}
+                {populatedModelSlots.length === 0 ? (
+                  <li className="text-muted-foreground border-border bg-background border px-3 py-2.5 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    No categories selected yet.
+                  </li>
+                ) : null}
               </ul>
             )}
           </div>

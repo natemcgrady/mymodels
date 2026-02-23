@@ -6,6 +6,12 @@ import { Label } from '@/components/ui/label'
 import { updateProfileModels } from '@/app/[username]/actions'
 import { Button } from '@/components/ui/button'
 import {
+  createProfileSlotRecord,
+  PROFILE_SLOT_CONFIG,
+  PROFILE_SLOT_VALUES,
+  type ProfileSlotRecord,
+} from '@/lib/profile-slots'
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -21,40 +27,14 @@ type CatalogModel = {
   name: string
 }
 
+type ModelSelections = ProfileSlotRecord<number | null>
+
 type ModelSelectionFormProps = {
   username: string
   catalog: CatalogModel[]
-  initialSelections: {
-    plan: number | null
-    build: number | null
-    debug: number | null
-  }
-  onSave?: (nextSelections?: {
-    plan: number | null
-    build: number | null
-    debug: number | null
-  }) => void
+  initialSelections: ModelSelections
+  onSave?: (nextSelections?: ModelSelections) => void
 }
-
-type SlotConfig = {
-  id: 'plan' | 'build' | 'debug'
-  label: 'Plan' | 'Build' | 'Debug'
-}
-
-const SLOT_CONFIG: SlotConfig[] = [
-  {
-    id: 'plan',
-    label: 'Plan',
-  },
-  {
-    id: 'build',
-    label: 'Build',
-  },
-  {
-    id: 'debug',
-    label: 'Debug',
-  },
-]
 
 function groupByProvider(catalog: CatalogModel[]) {
   return catalog.reduce<Record<string, CatalogModel[]>>((acc, model) => {
@@ -89,15 +69,14 @@ export function ModelSelectionForm({
 }: ModelSelectionFormProps) {
   const catalogByProvider = useMemo(() => groupByProvider(catalog), [catalog])
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [values, setValues] = useState<Record<'plan' | 'build' | 'debug', string>>({
-    plan: initialSelections.plan ? String(initialSelections.plan) : '',
-    build: initialSelections.build ? String(initialSelections.build) : '',
-    debug: initialSelections.debug ? String(initialSelections.debug) : '',
-  })
-  const hasChanges =
-    values.plan !== (initialSelections.plan ? String(initialSelections.plan) : '') ||
-    values.build !== (initialSelections.build ? String(initialSelections.build) : '') ||
-    values.debug !== (initialSelections.debug ? String(initialSelections.debug) : '')
+  const [values, setValues] = useState<ProfileSlotRecord<string>>(() =>
+    createProfileSlotRecord((slot) =>
+      initialSelections[slot] ? String(initialSelections[slot]) : ''
+    )
+  )
+  const hasChanges = PROFILE_SLOT_VALUES.some(
+    (slot) => values[slot] !== (initialSelections[slot] ? String(initialSelections[slot]) : '')
+  )
 
   return (
     <form
@@ -105,11 +84,7 @@ export function ModelSelectionForm({
         setSubmitError(null)
         try {
           await updateProfileModels(formData)
-          onSave?.({
-            plan: parseSelectionId(values.plan),
-            build: parseSelectionId(values.build),
-            debug: parseSelectionId(values.debug),
-          })
+          onSave?.(createProfileSlotRecord((slot) => parseSelectionId(values[slot])))
         } catch (error) {
           setSubmitError(error instanceof Error ? error.message : 'Could not save selections.')
         }
@@ -117,12 +92,12 @@ export function ModelSelectionForm({
       className="space-y-3"
     >
       <input type="hidden" name="username" value={username} />
-      <input type="hidden" name="plan" value={values.plan} />
-      <input type="hidden" name="build" value={values.build} />
-      <input type="hidden" name="debug" value={values.debug} />
+      {PROFILE_SLOT_VALUES.map((slot) => (
+        <input key={slot} type="hidden" name={slot} value={values[slot]} />
+      ))}
 
       <ul className="space-y-3">
-        {SLOT_CONFIG.map((slot) => {
+        {PROFILE_SLOT_CONFIG.map((slot) => {
           const value = values[slot.id]
 
           return (
