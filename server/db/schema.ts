@@ -27,6 +27,7 @@ export const profiles = pgTable('profiles', {
   avatarUrl: text('avatar_url'),
   githubUsername: varchar('github_username', { length: 64 }),
   twitterUsername: varchar('twitter_username', { length: 64 }),
+  mainEditor: varchar('main_editor', { length: 32 }),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 })

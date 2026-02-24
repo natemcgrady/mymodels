@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "main_editor" varchar(32);

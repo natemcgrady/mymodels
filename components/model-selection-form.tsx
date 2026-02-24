@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useFormStatus } from 'react-dom'
+import { PROFILE_EDITOR_OPTIONS, type ProfileEditor } from '@/lib/profile-editors'
 import { Label } from '@/components/ui/label'
 import { updateProfileModels } from '@/app/[username]/actions'
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,7 @@ type ModelSelectionFormProps = {
   username: string
   catalog: CatalogModel[]
   initialSelections: ModelSelections
+  initialMainEditor: ProfileEditor | null
   onSave?: (nextSelections?: ModelSelections) => void
 }
 
@@ -81,6 +83,7 @@ export function ModelSelectionForm({
   username,
   catalog,
   initialSelections,
+  initialMainEditor,
   onSave,
 }: ModelSelectionFormProps) {
   const providerGroups = useMemo(() => createProviderGroups(catalog), [catalog])
@@ -88,6 +91,7 @@ export function ModelSelectionForm({
   const [values, setValues] = useState<ProfileSlotRecord<string>>(() =>
     createProfileSlotRecord((slot) => selectionToFormValue(initialSelections[slot]))
   )
+  const [mainEditor, setMainEditor] = useState<string>(initialMainEditor ?? '')
   const selectedCount = PROFILE_SLOT_VALUES.reduce(
     (count, slot) => (values[slot] ? count + 1 : count),
     0
@@ -95,7 +99,7 @@ export function ModelSelectionForm({
   const hasSelectedValues = selectedCount > 0
   const hasChanges = PROFILE_SLOT_VALUES.some(
     (slot) => values[slot] !== selectionToFormValue(initialSelections[slot])
-  )
+  ) || mainEditor !== (initialMainEditor ?? '')
 
   return (
     <form
@@ -114,6 +118,7 @@ export function ModelSelectionForm({
       {PROFILE_SLOT_VALUES.map((slot) => (
         <input key={slot} type="hidden" name={slot} value={values[slot]} />
       ))}
+      <input type="hidden" name="mainEditor" value={mainEditor} />
 
       <Card className="border-border/70 bg-background/75 gap-0 overflow-hidden py-0 backdrop-blur-sm">
         <CardHeader className="border-border/70 border-b px-4 py-4 sm:px-6">
@@ -130,6 +135,66 @@ export function ModelSelectionForm({
         </CardHeader>
 
         <CardContent className="space-y-3 px-3 py-4 sm:px-4">
+          <Card className="border-border/70 bg-card/75 gap-0 py-0 shadow-none">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <Label
+                    htmlFor="mainEditor"
+                    className="font-pixel text-muted-foreground/90 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]"
+                  >
+                    Main editor
+                  </Label>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    Choose the editor you use most across your workflow.
+                  </p>
+                </div>
+                <div className="flex w-full items-center gap-2 sm:max-w-[430px]">
+                  <Select
+                    value={mainEditor || EMPTY_SELECTION_VALUE}
+                    onValueChange={(nextValue) =>
+                      setMainEditor(nextValue === EMPTY_SELECTION_VALUE ? '' : nextValue)
+                    }
+                  >
+                    <SelectTrigger
+                      id="mainEditor"
+                      className="border-border/70 bg-background/80 text-foreground hover:border-border focus-visible:ring-ring w-full shadow-none transition-[border-color,background-color] duration-200 focus-visible:ring-1"
+                    >
+                      <SelectValue placeholder="Choose an editor…" />
+                    </SelectTrigger>
+                    <SelectContent
+                      className="border-border/80 bg-card/95 backdrop-blur-md"
+                      position="popper"
+                    >
+                      <SelectGroup>
+                        <SelectLabel>Selection</SelectLabel>
+                        <SelectItem value={EMPTY_SELECTION_VALUE}>No selection</SelectItem>
+                      </SelectGroup>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>Editors</SelectLabel>
+                        {PROFILE_EDITOR_OPTIONS.map((editor) => (
+                          <SelectItem key={editor.value} value={editor.value}>
+                            {editor.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={!mainEditor}
+                    onClick={() => setMainEditor('')}
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <ul className="space-y-3">
             {PROFILE_SLOT_CONFIG.map((slot) => {
               const value = values[slot.id]

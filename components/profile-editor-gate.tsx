@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import { type ProfileEditor } from '@/lib/profile-editors'
 import {
   PROFILE_SLOT_CONFIG,
   PROFILE_SLOT_VALUES,
@@ -14,6 +15,7 @@ type ModelSelections = ProfileSlotRecord<number | null>
 type ProfileEditorGateProps = {
   username: string
   initialSelections: ModelSelections
+  initialMainEditor: ProfileEditor | null
   onSave?: (nextSelections?: ModelSelections) => void
 }
 
@@ -26,12 +28,18 @@ type CatalogModel = {
 type EditorDataResponse = {
   canEdit: boolean
   catalog: CatalogModel[]
+  mainEditor: ProfileEditor | null
 }
 
 const initialSelectionsKey = (s: ProfileEditorGateProps['initialSelections']) =>
   PROFILE_SLOT_VALUES.map((slot) => s[slot] ?? '').join('-')
 
-export function ProfileEditorGate({ username, initialSelections, onSave }: ProfileEditorGateProps) {
+export function ProfileEditorGate({
+  username,
+  initialSelections,
+  initialMainEditor,
+  onSave,
+}: ProfileEditorGateProps) {
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ['profile', 'editor-data', username],
     queryFn: async () => {
@@ -86,12 +94,20 @@ export function ProfileEditorGate({ username, initialSelections, onSave }: Profi
     )
   }
 
+  const resolvedMainEditor =
+    typeof data.mainEditor === 'string'
+      ? data.mainEditor
+      : data.mainEditor === null
+        ? null
+        : initialMainEditor
+
   return (
     <ModelSelectionForm
-      key={initialSelectionsKey(initialSelections)}
+      key={`${initialSelectionsKey(initialSelections)}-${resolvedMainEditor ?? ''}`}
       username={username}
       catalog={data.catalog}
       initialSelections={initialSelections}
+      initialMainEditor={resolvedMainEditor}
       onSave={onSave}
     />
   )

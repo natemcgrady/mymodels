@@ -1,0 +1,272 @@
+{
+  "id": "05b46c28-aa59-4dce-9681-a43babe2806a",
+  "prevId": "5db4c5df-f9a4-4380-b8ff-71557eee5ff2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.model_catalog": {
+      "name": "model_catalog",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "varchar(48)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "model_catalog_provider_name_idx": {
+          "name": "model_catalog_provider_name_idx",
+          "columns": [
+            {
+              "expression": "provider",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profile_model_selections": {
+      "name": "profile_model_selections",
+      "schema": "",
+      "columns": {
+        "profile_id": {
+          "name": "profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "profile_slot",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profile_model_selections_profile_id_profiles_id_fk": {
+          "name": "profile_model_selections_profile_id_profiles_id_fk",
+          "tableFrom": "profile_model_selections",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "profile_model_selections_model_id_model_catalog_id_fk": {
+          "name": "profile_model_selections_model_id_model_catalog_id_fk",
+          "tableFrom": "profile_model_selections",
+          "tableTo": "model_catalog",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "profile_model_selections_profile_id_slot_pk": {
+          "name": "profile_model_selections_profile_id_slot_pk",
+          "columns": [
+            "profile_id",
+            "slot"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "github_username": {
+          "name": "github_username",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "twitter_username": {
+          "name": "twitter_username",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "main_editor": {
+          "name": "main_editor",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profiles_user_id_unique": {
+          "name": "profiles_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        },
+        "profiles_username_unique": {
+          "name": "profiles_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.profile_slot": {
+      "name": "profile_slot",
+      "schema": "public",
+      "values": [
+        "plan",
+        "build",
+        "debug",
+        "image_generation",
+        "video_generation",
+        "creative_writing",
+        "audio",
+        "general"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

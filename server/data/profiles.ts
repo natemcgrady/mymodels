@@ -1,10 +1,12 @@
 import { db } from '@/lib/db'
+import { PROFILE_EDITOR_VALUES, type ProfileEditor } from '@/lib/profile-editors'
 import { createProfileSlotRecord, PROFILE_SLOT_VALUES, type ProfileSlot } from '@/lib/profile-slots'
 import { modelCatalog, profileModelSelections, profiles } from '@/server/db/schema'
 import { and, eq, inArray } from 'drizzle-orm'
 
 const USERNAME_MAX_LENGTH = 40
 const USERNAME_SUFFIX_LIMIT = 100
+const PROFILE_EDITOR_VALUE_SET = new Set<string>(PROFILE_EDITOR_VALUES)
 
 export function getUsernameHintFromMetadata(
   metadata: Record<string, unknown> | null
@@ -123,7 +125,14 @@ function enrichProfile(row: typeof profiles.$inferSelect) {
     image: row.avatarUrl ?? null,
     githubUrl: row.githubUsername ? `https://github.com/${row.githubUsername}` : null,
     twitterUrl: row.twitterUsername ? `https://x.com/${row.twitterUsername}` : null,
+    mainEditor: normalizeProfileEditor(row.mainEditor),
   }
+}
+
+function normalizeProfileEditor(value: string | null | undefined): ProfileEditor | null {
+  if (!value) return null
+  if (!PROFILE_EDITOR_VALUE_SET.has(value)) return null
+  return value as ProfileEditor
 }
 
 export async function getProfileByUserId(userId: string) {
@@ -209,4 +218,20 @@ export async function upsertProfileSelections({
         set: { modelId, updatedAt: new Date() },
       })
   }
+}
+
+export async function updateProfileMainEditor({
+  profileId,
+  mainEditor,
+}: {
+  profileId: number
+  mainEditor: ProfileEditor | null
+}) {
+  await db
+    .update(profiles)
+    .set({
+      mainEditor,
+      updatedAt: new Date(),
+    })
+    .where(eq(profiles.id, profileId))
 }

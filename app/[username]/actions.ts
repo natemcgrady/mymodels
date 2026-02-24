@@ -2,15 +2,17 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { PROFILE_EDITOR_VALUES } from '@/lib/profile-editors'
 import { createProfileSlotRecord } from '@/lib/profile-slots'
 import { createClient } from '@/lib/supabase/server'
 import { ensureModelCatalog } from '@/server/data/model-catalog'
-import { getProfileByUsername, upsertProfileSelections } from '@/server/data/profiles'
+import { getProfileByUsername, updateProfileMainEditor, upsertProfileSelections } from '@/server/data/profiles'
 
 const slotFormShape = createProfileSlotRecord(() => z.string().optional())
 
 const formSchema = z.object({
   username: z.string().min(1),
+  mainEditor: z.enum(PROFILE_EDITOR_VALUES).optional(),
   ...slotFormShape,
 })
 
@@ -25,8 +27,10 @@ function parseModelId(value: string | null | undefined) {
 
 export async function updateProfileModels(formData: FormData) {
   const rawSelections = createProfileSlotRecord((slot) => formData.get(slot)?.toString() ?? '')
+  const rawMainEditor = formData.get('mainEditor')?.toString().trim() ?? ''
   const parsed = formSchema.parse({
     username: formData.get('username'),
+    mainEditor: rawMainEditor || undefined,
     ...rawSelections,
   })
 
@@ -51,6 +55,10 @@ export async function updateProfileModels(formData: FormData) {
   await upsertProfileSelections({
     profileId: profile.id,
     selections: createProfileSlotRecord((slot) => parseModelId(parsed[slot])),
+  })
+  await updateProfileMainEditor({
+    profileId: profile.id,
+    mainEditor: parsed.mainEditor ?? null,
   })
 
   revalidatePath(`/${profile.username}`)

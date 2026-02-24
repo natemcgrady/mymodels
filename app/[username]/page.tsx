@@ -48,12 +48,14 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               image: profile.image,
               githubUrl: profile.githubUrl,
               twitterUrl: profile.twitterUrl,
+              mainEditor: profile.mainEditor,
             }}
             modelSlots={modelSlots}
             modelEditor={
               <ProfileEditorGate
                 username={profile.username}
                 initialSelections={createProfileSlotRecord((slot) => selections[slot]?.id ?? null)}
+                initialMainEditor={profile.mainEditor}
               />
             }
           />

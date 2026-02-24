@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { PROFILE_EDITOR_OPTIONS, type ProfileEditor } from '@/lib/profile-editors'
 import { getProviderBrand } from '@/lib/provider-brand'
 
 type ModelSlot = {
@@ -24,6 +25,7 @@ type ProfileCardProps = {
     image: string | null
     githubUrl?: string | null
     twitterUrl?: string | null
+    mainEditor?: ProfileEditor | null
   }
   modelSlots: ModelSlot[]
   modelEditor?: ReactNode
@@ -51,6 +53,11 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
   const populatedModelSlots = modelSlots.filter(
     (slot): slot is ModelSlot & { model: NonNullable<ModelSlot['model']> } => Boolean(slot.model)
   )
+  const selectedMainEditorLabel = profile.mainEditor
+    ? PROFILE_EDITOR_OPTIONS.find((option) => option.value === profile.mainEditor)?.label ??
+      profile.mainEditor
+    : null
+  const mainEditorLabel = selectedMainEditorLabel ?? 'Not selected yet'
   const renderedModelEditor = isValidElement<{ onSave?: () => void }>(modelEditor)
     ? cloneElement(modelEditor, {
         onSave: () => setIsEditing(false),
@@ -289,6 +296,14 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               </div>
             ) : (
               <ul className="mt-4 space-y-3">
+                <li className="border-border bg-background flex min-w-0 items-center justify-between gap-2 border px-3 py-2.5 sm:px-4 sm:py-3">
+                  <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
+                    Main editor
+                  </span>
+                  <span className="text-foreground flex min-w-0 items-center text-xs sm:text-sm">
+                    <span className="min-w-0 truncate">{mainEditorLabel}</span>
+                  </span>
+                </li>
                 {populatedModelSlots.map(({ slot, model }) => {
                   const providerBrand = model ? getProviderBrand(model.provider) : null
 
