@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { getProfileEditorOption } from '@/lib/profile-editors'
 import { PROFILE_SLOT_CONFIG } from '@/lib/profile-slots'
 import { getProviderBrand } from '@/lib/provider-brand'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
@@ -34,7 +35,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   })).filter((slot): slot is { label: string; model: NonNullable<(typeof selections)[keyof typeof selections]> } =>
     Boolean(slot.model)
   )
-  const isDenseLayout = slots.length > 5
+  const selectedMainEditor = getProfileEditorOption(profile.mainEditor ?? null)
+  const isDenseLayout = slots.length + (selectedMainEditor ? 1 : 0) > 5
   const requestUrl = new URL(request.url)
   const origin = requestUrl.origin
   const theme = requestUrl.searchParams.get('theme') === 'light' ? 'light' : 'dark'
@@ -189,6 +191,70 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             Currently using
           </div>
 
+          {selectedMainEditor ? (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                border: `1px solid ${palette.border}`,
+                backgroundColor: palette.rowBg,
+                padding: isDenseLayout ? '10px 14px' : '20px 24px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  fontSize: isDenseLayout ? 15 : 21,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  opacity: 0.75,
+                  color: palette.mutedText,
+                  fontFamily: FONT_PIXEL,
+                }}
+              >
+                Main editor
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  fontSize: isDenseLayout ? 20 : 28,
+                  lineHeight: 1,
+                  color: palette.text,
+                  fontFamily: FONT_PIXEL,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: isDenseLayout ? 20 : 32,
+                    height: isDenseLayout ? 20 : 32,
+                    marginRight: isDenseLayout ? 8 : 14,
+                    flexShrink: 0,
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`${origin}${selectedMainEditor.logoPath}`}
+                    alt={selectedMainEditor.label}
+                    width={isDenseLayout ? 20 : 32}
+                    height={isDenseLayout ? 20 : 32}
+                    style={{
+                      width: isDenseLayout ? 20 : 32,
+                      height: isDenseLayout ? 20 : 32,
+                    }}
+                  />
+                </div>
+                <span style={{ display: 'flex', alignItems: 'center' }}>{selectedMainEditor.label}</span>
+              </div>
+            </div>
+          ) : null}
+
           {slots.map(({ label, model }) => (
             <div
               key={label}
@@ -255,7 +321,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
               </div>
             </div>
           ))}
-          {slots.length === 0 ? (
+          {slots.length === 0 && !selectedMainEditor ? (
             <div
               style={{
                 display: 'flex',

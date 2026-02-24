@@ -104,7 +104,7 @@ export function ModelSelectionForm({
     (count, slot) => (values[slot] ? count + 1 : count),
     0
   )
-  const hasSelectedValues = selectedCount > 0
+  const hasSelectedValues = selectedCount > 0 || Boolean(mainEditor)
   const hasChanges =
     PROFILE_SLOT_VALUES.some(
       (slot) => values[slot] !== selectionToFormValue(initialSelections[slot])
@@ -201,15 +201,6 @@ export function ModelSelectionForm({
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={!mainEditor}
-                    onClick={() => setMainEditor('')}
-                  >
-                    Clear
-                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -286,7 +277,10 @@ export function ModelSelectionForm({
               variant="ghost"
               size="sm"
               disabled={!hasSelectedValues}
-              onClick={() => setValues(createProfileSlotRecord(() => ''))}
+              onClick={() => {
+                setValues(createProfileSlotRecord(() => ''))
+                setMainEditor('')
+              }}
             >
               Clear all
             </Button>
