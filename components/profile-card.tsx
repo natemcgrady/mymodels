@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { PROFILE_EDITOR_OPTIONS, type ProfileEditor } from '@/lib/profile-editors'
+import { getProfileEditorOption, type ProfileEditor } from '@/lib/profile-editors'
 import { getProviderBrand } from '@/lib/provider-brand'
 
 type ModelSlot = {
@@ -53,11 +53,8 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
   const populatedModelSlots = modelSlots.filter(
     (slot): slot is ModelSlot & { model: NonNullable<ModelSlot['model']> } => Boolean(slot.model)
   )
-  const selectedMainEditorLabel = profile.mainEditor
-    ? PROFILE_EDITOR_OPTIONS.find((option) => option.value === profile.mainEditor)?.label ??
-      profile.mainEditor
-    : null
-  const mainEditorLabel = selectedMainEditorLabel ?? 'Not selected yet'
+  const selectedMainEditor = getProfileEditorOption(profile.mainEditor)
+  const mainEditorLabel = selectedMainEditor?.label ?? 'Not selected yet'
   const renderedModelEditor = isValidElement<{ onSave?: () => void }>(modelEditor)
     ? cloneElement(modelEditor, {
         onSave: () => setIsEditing(false),
@@ -300,7 +297,17 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                   <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
                     Main editor
                   </span>
-                  <span className="text-foreground flex min-w-0 items-center text-xs sm:text-sm">
+                  <span className="text-foreground flex min-w-0 items-center gap-2 text-xs sm:text-sm">
+                    {selectedMainEditor ? (
+                      <Image
+                        src={selectedMainEditor.logoPath}
+                        alt={selectedMainEditor.label}
+                        width={20}
+                        height={20}
+                        sizes="20px"
+                        className="size-4 shrink-0 sm:size-5"
+                      />
+                    ) : null}
                     <span className="min-w-0 truncate">{mainEditorLabel}</span>
                   </span>
                 </li>

@@ -1,12 +1,17 @@
 'use client'
 
+import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { useFormStatus } from 'react-dom'
-import { PROFILE_EDITOR_OPTIONS, type ProfileEditor } from '@/lib/profile-editors'
+import {
+  getProfileEditorOption,
+  PROFILE_EDITOR_OPTIONS,
+  type ProfileEditor,
+} from '@/lib/profile-editors'
 import { Label } from '@/components/ui/label'
 import { updateProfileModels } from '@/app/[username]/actions'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   createProfileSlotRecord,
   PROFILE_SLOT_CONFIG,
@@ -92,14 +97,16 @@ export function ModelSelectionForm({
     createProfileSlotRecord((slot) => selectionToFormValue(initialSelections[slot]))
   )
   const [mainEditor, setMainEditor] = useState<string>(initialMainEditor ?? '')
+  const selectedMainEditor = getProfileEditorOption(mainEditor || null)
   const selectedCount = PROFILE_SLOT_VALUES.reduce(
     (count, slot) => (values[slot] ? count + 1 : count),
     0
   )
   const hasSelectedValues = selectedCount > 0
-  const hasChanges = PROFILE_SLOT_VALUES.some(
-    (slot) => values[slot] !== selectionToFormValue(initialSelections[slot])
-  ) || mainEditor !== (initialMainEditor ?? '')
+  const hasChanges =
+    PROFILE_SLOT_VALUES.some(
+      (slot) => values[slot] !== selectionToFormValue(initialSelections[slot])
+    ) || mainEditor !== (initialMainEditor ?? '')
 
   return (
     <form
@@ -121,19 +128,6 @@ export function ModelSelectionForm({
       <input type="hidden" name="mainEditor" value={mainEditor} />
 
       <Card className="border-border/70 bg-background/75 gap-0 overflow-hidden py-0 backdrop-blur-sm">
-        <CardHeader className="border-border/70 border-b px-4 py-4 sm:px-6">
-          <CardTitle className="font-pixel text-muted-foreground text-[11px] tracking-[0.16em] uppercase">
-            Profile model selector
-          </CardTitle>
-          <p className="text-foreground max-w-2xl text-sm leading-relaxed">
-            Assign a default model to each workflow slot so your profile reflects how you actually
-            work.
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {selectedCount} / {PROFILE_SLOT_VALUES.length} slots configured
-          </p>
-        </CardHeader>
-
         <CardContent className="space-y-3 px-3 py-4 sm:px-4">
           <Card className="border-border/70 bg-card/75 gap-0 py-0 shadow-none">
             <CardContent className="p-3 sm:p-4">
@@ -160,7 +154,21 @@ export function ModelSelectionForm({
                       id="mainEditor"
                       className="border-border/70 bg-background/80 text-foreground hover:border-border focus-visible:ring-ring w-full shadow-none transition-[border-color,background-color] duration-200 focus-visible:ring-1"
                     >
-                      <SelectValue placeholder="Choose an editor…" />
+                      {selectedMainEditor ? (
+                        <span className="inline-flex min-w-0 items-center gap-2">
+                          <Image
+                            src={selectedMainEditor.logoPath}
+                            alt={selectedMainEditor.label}
+                            width={18}
+                            height={18}
+                            sizes="18px"
+                            className="size-[18px] shrink-0"
+                          />
+                          <span className="truncate">{selectedMainEditor.label}</span>
+                        </span>
+                      ) : (
+                        <SelectValue placeholder="Choose an editor…" />
+                      )}
                     </SelectTrigger>
                     <SelectContent
                       className="border-border/80 bg-card/95 backdrop-blur-md"
@@ -175,7 +183,17 @@ export function ModelSelectionForm({
                         <SelectLabel>Editors</SelectLabel>
                         {PROFILE_EDITOR_OPTIONS.map((editor) => (
                           <SelectItem key={editor.value} value={editor.value}>
-                            {editor.label}
+                            <span className="inline-flex min-w-0 items-center gap-2">
+                              <Image
+                                src={editor.logoPath}
+                                alt={editor.label}
+                                width={16}
+                                height={16}
+                                sizes="16px"
+                                className="size-4 shrink-0"
+                              />
+                              <span className="truncate">{editor.label}</span>
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -281,7 +299,9 @@ export function ModelSelectionForm({
           ) : null}
           <SaveButton disabled={!hasChanges} />
           {!hasChanges ? (
-            <p className="text-muted-foreground text-xs">Update at least one slot to save changes.</p>
+            <p className="text-muted-foreground text-xs">
+              Update at least one slot to save changes.
+            </p>
           ) : null}
         </CardFooter>
       </Card>

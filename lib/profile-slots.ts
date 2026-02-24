@@ -1,4 +1,5 @@
 export const PROFILE_SLOT_VALUES = [
+  'general',
   'plan',
   'build',
   'debug',
@@ -6,7 +7,6 @@ export const PROFILE_SLOT_VALUES = [
   'video_generation',
   'creative_writing',
   'audio',
-  'general',
 ] as const
 
 export type ProfileSlot = (typeof PROFILE_SLOT_VALUES)[number]
