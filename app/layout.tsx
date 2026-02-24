@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'mymodels.dev',
     description: 'Share the models you use for planning, building, and debugging.',
-    images: ['/opengraph-image'],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'mymodels.dev' }],
   },
 }
 

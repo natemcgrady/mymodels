@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: UserProfilePageProps): Promis
       card: 'summary_large_image',
       title,
       description,
-      images: [`/${normalizedUsername}/share-image`],
+      images: [{ url: `/${normalizedUsername}/share-image`, width: 1200, height: 630, alt: title }],
     },
   }
 }
