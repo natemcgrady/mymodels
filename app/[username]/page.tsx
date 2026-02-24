@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: UserProfilePageProps): Promis
         {
           url: `/${normalizedUsername}/share-image`,
           width: 1200,
-          height: 675,
+          height: 630,
           alt: title,
         },
       ],
