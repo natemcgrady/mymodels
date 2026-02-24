@@ -29,14 +29,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   }
 
   const selections = await getProfileSelections(profile.id)
-  const slots = PROFILE_SLOT_CONFIG.map(({ id, label }) => ({
+  const allSlots = PROFILE_SLOT_CONFIG.map(({ id, label }) => ({
     label,
     model: selections[id],
   })).filter((slot): slot is { label: string; model: NonNullable<(typeof selections)[keyof typeof selections]> } =>
     Boolean(slot.model)
   )
+  const slots = allSlots.slice(0, 6)
   const selectedMainEditor = getProfileEditorOption(profile.mainEditor ?? null)
-  const isDenseLayout = slots.length + (selectedMainEditor ? 1 : 0) > 5
+  const isDenseLayout = slots.length + (selectedMainEditor ? 1 : 0) > 3
   const requestUrl = new URL(request.url)
   const origin = requestUrl.origin
   const theme = requestUrl.searchParams.get('theme') === 'light' ? 'light' : 'dark'
@@ -69,8 +70,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   return new ImageResponse(
     <div
       style={{
-        width: '100%',
-        height: '100%',
+        width: WIDTH,
+        height: HEIGHT,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -81,21 +82,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
     >
       <div
         style={{
-          width: WIDTH,
+          width: '100%',
+          height: '100%',
           backgroundColor: palette.cardBg,
           display: 'flex',
           flexDirection: 'column',
-          padding: 56,
+          padding: 40,
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
         <div
           style={{
             display: 'flex',
             position: 'absolute',
-            top: 32,
-            right: 40,
-            fontSize: 28,
+            top: 24,
+            right: 36,
+            fontSize: 22,
             fontWeight: 700,
             color: palette.primary,
             fontFamily: FONT_PIXEL,
@@ -104,17 +107,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         >
           mymodels.dev/{normalizedUsername}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           {avatarSource ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={avatarSource}
               alt={displayName}
-              width={128}
-              height={128}
+              width={96}
+              height={96}
               style={{
-                width: 128,
-                height: 128,
+                width: 96,
+                height: 96,
                 objectFit: 'cover',
                 border: `1px solid ${palette.border}`,
               }}
@@ -122,13 +125,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
           ) : (
             <div
               style={{
-                width: 128,
-                height: 128,
+                width: 96,
+                height: 96,
                 border: `1px solid ${palette.border}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 54,
+                fontSize: 40,
                 fontWeight: 700,
                 color: palette.text,
                 backgroundColor: palette.avatarFallbackBg,
@@ -139,11 +142,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             </div>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <div
               style={{
                 display: 'flex',
-                fontSize: 58,
+                fontSize: 44,
                 fontWeight: 700,
                 lineHeight: 1.05,
                 color: palette.text,
@@ -154,7 +157,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             <div
               style={{
                 display: 'flex',
-                fontSize: 24,
+                fontSize: 18,
                 letterSpacing: '0.16em',
                 opacity: 0.72,
                 textTransform: 'uppercase',
@@ -169,18 +172,18 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
 
         <div
           style={{
-            marginTop: isDenseLayout ? 30 : 48,
+            marginTop: isDenseLayout ? 18 : 28,
             borderTop: `1px solid ${palette.border}`,
-            paddingTop: isDenseLayout ? 20 : 34,
+            paddingTop: isDenseLayout ? 14 : 22,
             display: 'flex',
             flexDirection: 'column',
-            gap: isDenseLayout ? 10 : 18,
+            gap: isDenseLayout ? 6 : 12,
           }}
         >
           <div
             style={{
               display: 'flex',
-              fontSize: isDenseLayout ? 18 : 22,
+              fontSize: isDenseLayout ? 14 : 18,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
               opacity: 0.72,
@@ -199,13 +202,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 alignItems: 'center',
                 border: `1px solid ${palette.border}`,
                 backgroundColor: palette.rowBg,
-                padding: isDenseLayout ? '10px 14px' : '20px 24px',
+                padding: isDenseLayout ? '8px 12px' : '12px 16px',
               }}
             >
               <div
                 style={{
                   display: 'flex',
-                  fontSize: isDenseLayout ? 15 : 21,
+                  fontSize: isDenseLayout ? 13 : 17,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   opacity: 0.75,
@@ -221,7 +224,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'flex-end',
-                  fontSize: isDenseLayout ? 20 : 28,
+                  fontSize: isDenseLayout ? 16 : 22,
                   lineHeight: 1,
                   color: palette.text,
                   fontFamily: FONT_PIXEL,
@@ -232,9 +235,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: isDenseLayout ? 20 : 32,
-                    height: isDenseLayout ? 20 : 32,
-                    marginRight: isDenseLayout ? 8 : 14,
+                    width: isDenseLayout ? 18 : 24,
+                    height: isDenseLayout ? 18 : 24,
+                    marginRight: isDenseLayout ? 6 : 10,
                     flexShrink: 0,
                   }}
                 >
@@ -242,11 +245,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                   <img
                     src={`${origin}${selectedMainEditor.logoPath}`}
                     alt={selectedMainEditor.label}
-                    width={isDenseLayout ? 20 : 32}
-                    height={isDenseLayout ? 20 : 32}
+                    width={isDenseLayout ? 18 : 24}
+                    height={isDenseLayout ? 18 : 24}
                     style={{
-                      width: isDenseLayout ? 20 : 32,
-                      height: isDenseLayout ? 20 : 32,
+                      width: isDenseLayout ? 18 : 24,
+                      height: isDenseLayout ? 18 : 24,
                       objectFit: 'contain',
                     }}
                   />
@@ -265,13 +268,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 alignItems: 'center',
                 border: `1px solid ${palette.border}`,
                 backgroundColor: palette.rowBg,
-                padding: isDenseLayout ? '10px 14px' : '20px 24px',
+                padding: isDenseLayout ? '8px 12px' : '12px 16px',
               }}
             >
               <div
                 style={{
                   display: 'flex',
-                  fontSize: isDenseLayout ? 15 : 21,
+                  fontSize: isDenseLayout ? 13 : 17,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   opacity: 0.75,
@@ -287,7 +290,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'flex-end',
-                  fontSize: isDenseLayout ? 20 : 28,
+                  fontSize: isDenseLayout ? 16 : 22,
                   lineHeight: 1,
                   color: palette.text,
                   fontFamily: FONT_PIXEL,
@@ -299,9 +302,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: isDenseLayout ? 20 : 32,
-                      height: isDenseLayout ? 20 : 32,
-                      marginRight: isDenseLayout ? 8 : 14,
+                      width: isDenseLayout ? 18 : 24,
+                      height: isDenseLayout ? 18 : 24,
+                      marginRight: isDenseLayout ? 6 : 10,
                       flexShrink: 0,
                     }}
                   >
@@ -309,11 +312,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                     <img
                       src={`${origin}${getProviderBrand(model.provider)?.logoPath}`}
                       alt={model.provider}
-                      width={isDenseLayout ? 20 : 32}
-                      height={isDenseLayout ? 20 : 32}
+                      width={isDenseLayout ? 18 : 24}
+                      height={isDenseLayout ? 18 : 24}
                       style={{
-                        width: isDenseLayout ? 20 : 32,
-                        height: isDenseLayout ? 20 : 32,
+                        width: isDenseLayout ? 18 : 24,
+                        height: isDenseLayout ? 18 : 24,
                         objectFit: 'contain',
                       }}
                     />
@@ -329,9 +332,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 display: 'flex',
                 border: `1px solid ${palette.border}`,
                 backgroundColor: palette.rowBg,
-                padding: '12px 16px',
+                padding: '10px 14px',
                 color: palette.mutedText,
-                fontSize: 22,
+                fontSize: 18,
                 fontFamily: FONT_PIXEL,
               }}
             >
