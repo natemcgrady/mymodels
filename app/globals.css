@@ -203,11 +203,5 @@ html.dark {
     width: 16px;
     height: 16px;
     stroke: currentColor;
-    stroke-width: 1.2px;
-    fill: currentColor;
-  }
-
-  .lucide * {
-    stroke-width: 1.2px;
   }
 }

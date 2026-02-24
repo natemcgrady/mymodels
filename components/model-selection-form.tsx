@@ -46,6 +46,7 @@ type ModelSelectionFormProps = {
   initialSelections: ModelSelections
   initialMainEditor: ProfileEditor | null
   onSave?: (nextSelections?: ModelSelections) => void
+  onCancel?: () => void
 }
 
 function selectionToFormValue(value: number | null | undefined) {
@@ -90,6 +91,7 @@ export function ModelSelectionForm({
   initialSelections,
   initialMainEditor,
   onSave,
+  onCancel,
 }: ModelSelectionFormProps) {
   const providerGroups = useMemo(() => createProviderGroups(catalog), [catalog])
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -297,7 +299,14 @@ export function ModelSelectionForm({
               {submitError}
             </p>
           ) : null}
-          <SaveButton disabled={!hasChanges} />
+          <div className="flex flex-wrap items-center gap-2">
+            <SaveButton disabled={!hasChanges} />
+            {onCancel ? (
+              <Button type="button" variant="outline" size="sm" onClick={onCancel}>
+                Cancel
+              </Button>
+            ) : null}
+          </div>
           {!hasChanges ? (
             <p className="text-muted-foreground text-xs">
               Update at least one slot to save changes.

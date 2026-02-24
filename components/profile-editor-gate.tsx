@@ -17,6 +17,7 @@ type ProfileEditorGateProps = {
   initialSelections: ModelSelections
   initialMainEditor: ProfileEditor | null
   onSave?: (nextSelections?: ModelSelections) => void
+  onCancel?: () => void
 }
 
 type CatalogModel = {
@@ -39,6 +40,7 @@ export function ProfileEditorGate({
   initialSelections,
   initialMainEditor,
   onSave,
+  onCancel,
 }: ProfileEditorGateProps) {
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ['profile', 'editor-data', username],
@@ -109,6 +111,7 @@ export function ProfileEditorGate({
       initialSelections={initialSelections}
       initialMainEditor={resolvedMainEditor}
       onSave={onSave}
+      onCancel={onCancel}
     />
   )
 }

@@ -55,9 +55,10 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
   )
   const selectedMainEditor = getProfileEditorOption(profile.mainEditor)
   const mainEditorLabel = selectedMainEditor?.label ?? 'Not selected yet'
-  const renderedModelEditor = isValidElement<{ onSave?: () => void }>(modelEditor)
+  const renderedModelEditor = isValidElement<{ onSave?: () => void; onCancel?: () => void }>(modelEditor)
     ? cloneElement(modelEditor, {
         onSave: () => setIsEditing(false),
+        onCancel: () => setIsEditing(false),
       })
     : modelEditor
 
@@ -274,15 +275,15 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               <h2 className="text-muted-foreground text-xs font-medium tracking-[0.14em] uppercase sm:text-sm sm:tracking-[0.16em]">
                 Currently using
               </h2>
-              {modelEditor && canEditProfile ? (
+              {modelEditor && canEditProfile && !isEditing ? (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setIsEditing((current) => !current)}
+                  onClick={() => setIsEditing(true)}
                   data-capture-exclude="true"
                 >
-                  {isEditing ? 'Cancel' : 'Edit'}
+                  Edit
                 </Button>
               ) : null}
             </div>
