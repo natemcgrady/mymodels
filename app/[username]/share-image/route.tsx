@@ -32,14 +32,54 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   const allSlots = PROFILE_SLOT_CONFIG.map(({ id, label }) => ({
     label,
     model: selections[id],
-  })).filter((slot): slot is { label: string; model: NonNullable<(typeof selections)[keyof typeof selections]> } =>
-    Boolean(slot.model)
+  })).filter(
+    (
+      slot
+    ): slot is {
+      label: string
+      model: NonNullable<(typeof selections)[keyof typeof selections]>
+    } => Boolean(slot.model)
   )
   const slots = allSlots.slice(0, 6)
   const selectedMainEditor = getProfileEditorOption(profile.mainEditor ?? null)
-  const isDenseLayout = slots.length + (selectedMainEditor ? 1 : 0) > 3
   const requestUrl = new URL(request.url)
   const origin = requestUrl.origin
+  type ShareRowItem = { label: string; value: string; iconPath?: string; iconAlt?: string }
+  const rowItems: ShareRowItem[] = []
+
+  if (selectedMainEditor) {
+    rowItems.push({
+      label: 'Main editor',
+      value: selectedMainEditor.label,
+      iconPath: `${origin}${selectedMainEditor.logoPath}`,
+      iconAlt: selectedMainEditor.label,
+    })
+  }
+
+  for (const { label, model } of slots) {
+    const providerBrand = getProviderBrand(model.provider)
+    rowItems.push({
+      label,
+      value: model.name,
+      iconPath: providerBrand?.logoPath ? `${origin}${providerBrand.logoPath}` : undefined,
+      iconAlt: model.provider,
+    })
+  }
+  const visibleRowItems = rowItems.slice(0, 4)
+  const rowCount = visibleRowItems.length
+  const isCompactLayout = rowCount >= 6
+  const isMidLayout = rowCount === 5
+  const avatarSize = isCompactLayout ? 90 : isMidLayout ? 98 : 112
+  const nameSize = isCompactLayout ? 44 : isMidLayout ? 48 : 54
+  const handleSize = isCompactLayout ? 16 : 18
+  const rowGap = isCompactLayout ? 8 : isMidLayout ? 10 : 12
+  const rowPaddingY = isCompactLayout ? 8 : isMidLayout ? 10 : 12
+  const rowPaddingX = isCompactLayout ? 12 : 16
+  const rowLabelSize = isCompactLayout ? 13 : 15
+  const rowValueSize = isCompactLayout ? 18 : isMidLayout ? 21 : 24
+  const rowIconSize = isCompactLayout ? 18 : 22
+  const sectionTopSpacing = isCompactLayout ? 16 : 22
+  const sectionPaddingTop = isCompactLayout ? 14 : 20
   const theme = requestUrl.searchParams.get('theme') === 'light' ? 'light' : 'dark'
   const palette =
     theme === 'dark'
@@ -98,7 +138,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             position: 'absolute',
             top: 24,
             right: 36,
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 700,
             color: palette.primary,
             fontFamily: FONT_PIXEL,
@@ -107,17 +147,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         >
           mymodels.dev/{normalizedUsername}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
           {avatarSource ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={avatarSource}
               alt={displayName}
-              width={96}
-              height={96}
+              width={avatarSize}
+              height={avatarSize}
               style={{
-                width: 96,
-                height: 96,
+                width: avatarSize,
+                height: avatarSize,
                 objectFit: 'cover',
                 border: `1px solid ${palette.border}`,
               }}
@@ -125,13 +165,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
           ) : (
             <div
               style={{
-                width: 96,
-                height: 96,
+                width: avatarSize,
+                height: avatarSize,
                 border: `1px solid ${palette.border}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 40,
+                fontSize: isCompactLayout ? 36 : 42,
                 fontWeight: 700,
                 color: palette.text,
                 backgroundColor: palette.avatarFallbackBg,
@@ -146,7 +186,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             <div
               style={{
                 display: 'flex',
-                fontSize: 44,
+                fontSize: nameSize,
                 fontWeight: 700,
                 lineHeight: 1.05,
                 color: palette.text,
@@ -157,7 +197,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             <div
               style={{
                 display: 'flex',
-                fontSize: 18,
+                fontSize: handleSize,
                 letterSpacing: '0.16em',
                 opacity: 0.72,
                 textTransform: 'uppercase',
@@ -172,18 +212,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
 
         <div
           style={{
-            marginTop: isDenseLayout ? 18 : 28,
+            marginTop: sectionTopSpacing,
             borderTop: `1px solid ${palette.border}`,
-            paddingTop: isDenseLayout ? 14 : 22,
+            paddingTop: sectionPaddingTop,
             display: 'flex',
             flexDirection: 'column',
-            gap: isDenseLayout ? 6 : 12,
+            gap: rowGap,
+            flex: 1,
+            minHeight: 0,
           }}
         >
           <div
             style={{
               display: 'flex',
-              fontSize: isDenseLayout ? 14 : 18,
+              fontSize: isCompactLayout ? 14 : 17,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
               opacity: 0.72,
@@ -193,140 +235,80 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
           >
             Currently using
           </div>
-
-          {selectedMainEditor ? (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                border: `1px solid ${palette.border}`,
-                backgroundColor: palette.rowBg,
-                padding: isDenseLayout ? '8px 12px' : '12px 16px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  fontSize: isDenseLayout ? 13 : 17,
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  opacity: 0.75,
-                  color: palette.mutedText,
-                  fontFamily: FONT_PIXEL,
-                }}
-              >
-                Main editor
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  fontSize: isDenseLayout ? 16 : 22,
-                  lineHeight: 1,
-                  color: palette.text,
-                  fontFamily: FONT_PIXEL,
-                }}
-              >
+          {visibleRowItems.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: rowGap, flex: 1, minHeight: 0 }}>
+              {visibleRowItems.map((row) => (
                 <div
+                  key={row.label}
                   style={{
                     display: 'flex',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    width: isDenseLayout ? 18 : 24,
-                    height: isDenseLayout ? 18 : 24,
-                    marginRight: isDenseLayout ? 6 : 10,
-                    flexShrink: 0,
+                    border: `1px solid ${palette.border}`,
+                    backgroundColor: palette.rowBg,
+                    padding: `${rowPaddingY}px ${rowPaddingX}px`,
+                    minHeight: isCompactLayout ? 44 : 52,
+                    flex: 1,
                   }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`${origin}${selectedMainEditor.logoPath}`}
-                    alt={selectedMainEditor.label}
-                    width={isDenseLayout ? 18 : 24}
-                    height={isDenseLayout ? 18 : 24}
-                    style={{
-                      width: isDenseLayout ? 18 : 24,
-                      height: isDenseLayout ? 18 : 24,
-                      objectFit: 'contain',
-                    }}
-                  />
-                </div>
-                <span style={{ display: 'flex', alignItems: 'center' }}>{selectedMainEditor.label}</span>
-              </div>
-            </div>
-          ) : null}
-
-          {slots.map(({ label, model }) => (
-            <div
-              key={label}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                border: `1px solid ${palette.border}`,
-                backgroundColor: palette.rowBg,
-                padding: isDenseLayout ? '8px 12px' : '12px 16px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  fontSize: isDenseLayout ? 13 : 17,
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  opacity: 0.75,
-                  color: palette.mutedText,
-                  fontFamily: FONT_PIXEL,
-                }}
-              >
-                {label}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  fontSize: isDenseLayout ? 16 : 22,
-                  lineHeight: 1,
-                  color: palette.text,
-                  fontFamily: FONT_PIXEL,
-                }}
-              >
-                {getProviderBrand(model.provider)?.logoPath ? (
                   <div
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: isDenseLayout ? 18 : 24,
-                      height: isDenseLayout ? 18 : 24,
-                      marginRight: isDenseLayout ? 6 : 10,
-                      flexShrink: 0,
+                      fontSize: rowLabelSize,
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      opacity: 0.75,
+                      color: palette.mutedText,
+                      fontFamily: FONT_PIXEL,
                     }}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`${origin}${getProviderBrand(model.provider)?.logoPath}`}
-                      alt={model.provider}
-                      width={isDenseLayout ? 18 : 24}
-                      height={isDenseLayout ? 18 : 24}
-                      style={{
-                        width: isDenseLayout ? 18 : 24,
-                        height: isDenseLayout ? 18 : 24,
-                        objectFit: 'contain',
-                      }}
-                    />
+                    {row.label}
                   </div>
-                ) : null}
-                <span style={{ display: 'flex', alignItems: 'center' }}>{model.name}</span>
-              </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      maxWidth: '66%',
+                      fontSize: rowValueSize,
+                      lineHeight: 1,
+                      color: palette.text,
+                      fontFamily: FONT_PIXEL,
+                    }}
+                  >
+                    {row.iconPath ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: rowIconSize,
+                          height: rowIconSize,
+                          marginRight: 10,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={row.iconPath}
+                          alt={row.iconAlt ?? row.label}
+                          width={rowIconSize}
+                          height={rowIconSize}
+                          style={{
+                            width: rowIconSize,
+                            height: rowIconSize,
+                            objectFit: 'contain',
+                          }}
+                        />
+                      </div>
+                    ) : null}
+                    <span style={{ display: 'flex', alignItems: 'center' }}>{row.value}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-          {slots.length === 0 && !selectedMainEditor ? (
+          ) : (
             <div
               style={{
                 display: 'flex',
@@ -340,7 +322,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             >
               No categories selected yet.
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     </div>,
