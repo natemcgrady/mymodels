@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createProfileSlotRecord, PROFILE_SLOT_CONFIG } from '@/lib/profile-slots'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
@@ -14,6 +15,44 @@ export const dynamicParams = true
 
 export async function generateStaticParams() {
   return []
+}
+
+export async function generateMetadata({ params }: UserProfilePageProps): Promise<Metadata> {
+  const { username } = await params
+  const normalizedUsername = username.trim()
+  if (!normalizedUsername) return {}
+
+  const profile = await getProfileByUsername(normalizedUsername)
+  if (!profile) return {}
+
+  const displayName = profile.displayName || profile.username
+  const title = `${displayName} (@${profile.username}) | mymodels.dev`
+  const description = `See the AI models ${displayName} uses for planning, building, and debugging.`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: `/${normalizedUsername}/share-image`,
+          width: 1200,
+          height: 675,
+          alt: title,
+        },
+      ],
+      type: 'profile',
+      url: `/${normalizedUsername}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`/${normalizedUsername}/share-image`],
+    },
+  }
 }
 
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
