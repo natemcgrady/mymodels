@@ -247,6 +247,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                     style={{
                       width: isDenseLayout ? 20 : 32,
                       height: isDenseLayout ? 20 : 32,
+                      objectFit: 'contain',
                     }}
                   />
                 </div>
@@ -313,6 +314,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                       style={{
                         width: isDenseLayout ? 20 : 32,
                         height: isDenseLayout ? 20 : 32,
+                        objectFit: 'contain',
                       }}
                     />
                   </div>
