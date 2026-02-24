@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getImageBaseUrl } from '@/lib/metadata-base'
 import { createProfileSlotRecord, PROFILE_SLOT_CONFIG } from '@/lib/profile-slots'
 import { getProfileByUsername, getProfileSelections } from '@/server/data/profiles'
 import { ProfileCard } from '@/components/profile-card'
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: UserProfilePageProps): Promis
       description,
       images: [
         {
-          url: `/${normalizedUsername}/share-image`,
+          url: `${getImageBaseUrl()}/${normalizedUsername}/share-image`,
           width: 1200,
           height: 630,
           alt: title,
@@ -50,7 +51,14 @@ export async function generateMetadata({ params }: UserProfilePageProps): Promis
       card: 'summary_large_image',
       title,
       description,
-      images: [{ url: `/${normalizedUsername}/share-image`, width: 1200, height: 630, alt: title }],
+      images: [
+        {
+          url: `${getImageBaseUrl()}/${normalizedUsername}/share-image`,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
     },
   }
 }
