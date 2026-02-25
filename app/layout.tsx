@@ -7,6 +7,7 @@ import { SiteHeader } from '@/components/site-header'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { GeistPixelSquare } from 'geist/font/pixel'
+import { Analytics } from '@vercel/analytics/next'
 
 export const viewport: Viewport = {
   viewportFit: 'cover',
@@ -33,14 +34,28 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'mymodels.dev',
     description: 'Share the models you use for planning, building, and debugging.',
-    images: [{ url: `${getImageBaseUrl()}/opengraph-image`, width: 1200, height: 630, alt: 'mymodels.dev' }],
+    images: [
+      {
+        url: `${getImageBaseUrl()}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: 'mymodels.dev',
+      },
+    ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'mymodels.dev',
     description: 'Share the models you use for planning, building, and debugging.',
-    images: [{ url: `${getImageBaseUrl()}/opengraph-image`, width: 1200, height: 630, alt: 'mymodels.dev' }],
+    images: [
+      {
+        url: `${getImageBaseUrl()}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: 'mymodels.dev',
+      },
+    ],
   },
 }
 
@@ -65,6 +80,7 @@ export default function RootLayout({
           {children}
         </Providers>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   )
