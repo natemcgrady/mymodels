@@ -3,7 +3,7 @@ import {
   PROFILE_SLOT_CONFIG,
   PROFILE_SLOT_LEADERBOARD_DESCRIPTIONS,
 } from '@/lib/profile-slots'
-import { LeaderboardChart } from '@/components/leaderboard-section'
+import { EditorLeaderboardChart, LeaderboardChart } from '@/components/leaderboard-section'
 
 export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: LeaderboardData }) {
   return (
@@ -23,12 +23,18 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
-        <LeaderboardChart
-          title="Overall"
-          description="Popularity across all profile categories."
-          entries={leaderboard.overall}
+      <div className="space-y-4 sm:space-y-5">
+        <EditorLeaderboardChart
+          title="Main editor"
+          description="Most popular editors across the community."
+          entries={leaderboard.byMainEditor}
         />
+        <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
+          <LeaderboardChart
+            title="Overall"
+            description="Popularity across all profile categories."
+            entries={leaderboard.overall}
+          />
         {PROFILE_SLOT_CONFIG.map((slot) => (
           <LeaderboardChart
             key={slot.id}
@@ -37,6 +43,7 @@ export function CommunityLeaderboardSection({ leaderboard }: { leaderboard: Lead
             entries={leaderboard.bySlot[slot.id]}
           />
         ))}
+        </div>
       </div>
     </section>
   )
