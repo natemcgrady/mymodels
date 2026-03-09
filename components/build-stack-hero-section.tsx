@@ -26,12 +26,12 @@ export function BuildStackHeroSection({
     <section className="border-border/80 bg-card/60 relative overflow-hidden border p-5 shadow-lg backdrop-blur-sm sm:p-8">
       <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-10">
         <div className="space-y-5">
-          <p className="font-pixel text-primary text-[10px] tracking-[0.22em] uppercase sm:text-xs">
+          <p className="text-primary text-[10px] tracking-[0.22em] uppercase sm:text-xs">
             Build your AI stack card
           </p>
           <h1 className="text-foreground max-w-2xl text-3xl leading-snug font-semibold text-balance sm:text-5xl sm:leading-tight">
             How do you{' '}
-            <span className="font-pixel text-primary inline-block">
+            <span className="text-primary inline-block">
               <HeroVerbTypewriter />
             </span>
             ?

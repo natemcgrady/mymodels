@@ -12,8 +12,6 @@ const HEIGHT = 630
 
 const FONT_SANS =
   'Geist, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif'
-const FONT_PIXEL =
-  '"Geist Pixel Square", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
 
 export async function GET(request: Request, { params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
@@ -141,7 +139,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
             fontSize: 24,
             fontWeight: 700,
             color: palette.primary,
-            fontFamily: FONT_PIXEL,
+            fontFamily: FONT_SANS,
             letterSpacing: '0.04em',
           }}
         >
@@ -202,7 +200,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 opacity: 0.72,
                 textTransform: 'uppercase',
                 color: palette.mutedText,
-                fontFamily: FONT_PIXEL,
+                fontFamily: FONT_SANS,
               }}
             >
               @{profile.username}
@@ -230,7 +228,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
               textTransform: 'uppercase',
               opacity: 0.72,
               color: palette.mutedText,
-              fontFamily: FONT_PIXEL,
+              fontFamily: FONT_SANS,
             }}
           >
             Currently using
@@ -259,7 +257,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                       textTransform: 'uppercase',
                       opacity: 0.75,
                       color: palette.mutedText,
-                      fontFamily: FONT_PIXEL,
+                      fontFamily: FONT_SANS,
                     }}
                   >
                     {row.label}
@@ -274,7 +272,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                       fontSize: rowValueSize,
                       lineHeight: 1,
                       color: palette.text,
-                      fontFamily: FONT_PIXEL,
+                      fontFamily: FONT_SANS,
                     }}
                   >
                     {row.iconPath ? (
@@ -317,7 +315,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
                 padding: '10px 14px',
                 color: palette.mutedText,
                 fontSize: 18,
-                fontFamily: FONT_PIXEL,
+                fontFamily: FONT_SANS,
               }}
             >
               No categories selected yet.

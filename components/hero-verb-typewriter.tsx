@@ -1,10 +1,13 @@
 'use client'
 
 import Typewriter from 'typewriter-effect'
+import { GeistPixelSquare } from 'geist/font/pixel'
 
 export function HeroVerbTypewriter() {
   return (
-    <span className="inline-flex min-w-[5ch] justify-start">
+    <span
+      className={`${GeistPixelSquare.variable} font-pixel inline-flex min-w-[5ch] justify-start`}
+    >
       <Typewriter
         options={{
           loop: true,

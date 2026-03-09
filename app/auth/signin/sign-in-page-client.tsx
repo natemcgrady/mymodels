@@ -36,7 +36,7 @@ export function SignInPageClient() {
     >
       <div className="border-border bg-card flex w-full max-w-md flex-col items-center gap-6 border p-5 text-center sm:p-8">
         <div className="space-y-2">
-          <p className="font-pixel text-muted-foreground text-[11px] tracking-[0.2em] uppercase">
+          <p className="text-muted-foreground text-[11px] tracking-[0.2em] uppercase">
             MyModels.dev
           </p>
           <h1 className="text-foreground text-2xl font-semibold text-balance sm:text-3xl">

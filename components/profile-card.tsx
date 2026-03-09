@@ -232,7 +232,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
               <h1 className="text-foreground text-xl font-semibold text-balance sm:text-2xl">
                 {profile.displayName}
               </h1>
-              <p className="font-pixel text-muted-foreground truncate text-[10px] tracking-[0.14em] uppercase sm:text-[11px] sm:tracking-[0.16em]">
+              <p className="text-muted-foreground truncate text-[10px] tracking-[0.14em] uppercase sm:text-[11px] sm:tracking-[0.16em]">
                 @{profile.username}
               </p>
               {profile.githubUrl || profile.twitterUrl ? (
@@ -295,7 +295,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
             ) : (
               <ul className="mt-4 space-y-3">
                 <li className="border-border bg-background flex min-w-0 items-center justify-between gap-2 border px-3 py-2.5 sm:px-4 sm:py-3">
-                  <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
+                  <span className="text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
                     Main editor
                   </span>
                   <span className="text-foreground flex min-w-0 items-center gap-2 text-xs sm:text-sm">
@@ -320,7 +320,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
                       key={slot}
                       className="border-border bg-background flex min-w-0 items-center justify-between gap-2 border px-3 py-2.5 sm:px-4 sm:py-3"
                     >
-                      <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
+                      <span className="text-muted-foreground shrink-0 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]">
                         {slot}
                       </span>
                       <span className="text-foreground flex min-w-0 items-center gap-2 text-xs sm:text-sm">

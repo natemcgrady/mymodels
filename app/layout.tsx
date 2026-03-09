@@ -6,7 +6,6 @@ import { Toaster } from '@/components/ui/sonner'
 import { SiteHeader } from '@/components/site-header'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import { GeistPixelSquare } from 'geist/font/pixel'
 import { Analytics } from '@vercel/analytics/next'
 
 export const viewport: Viewport = {
@@ -67,7 +66,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable} touch-manipulation font-sans antialiased`}
+        className={`${GeistSans.variable} ${GeistMono.variable} touch-manipulation font-sans antialiased`}
       >
         <a
           href="#main-content"

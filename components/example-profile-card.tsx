@@ -51,12 +51,12 @@ export function ExampleProfileCard({
               <p className="text-foreground truncate text-base font-semibold sm:text-lg">
                 {profile.displayName}
               </p>
-              <p className="font-pixel text-muted-foreground truncate text-[10px] tracking-[0.16em] uppercase sm:text-[11px]">
+              <p className="text-muted-foreground truncate text-[10px] tracking-[0.16em] uppercase sm:text-[11px]">
                 @{profile.username}
               </p>
             </div>
           </div>
-          <span className="font-pixel text-primary shrink-0 text-[10px] tracking-[0.18em] uppercase sm:text-[11px]">
+          <span className="text-primary shrink-0 text-[10px] tracking-[0.18em] uppercase sm:text-[11px]">
             {isLoggedIn ? 'Live preview' : 'Example profile'}
           </span>
         </div>
@@ -67,7 +67,7 @@ export function ExampleProfileCard({
               key={row.label}
               className="border-border bg-card/80 flex min-w-0 items-center justify-between gap-4 border px-3 py-2.5 sm:px-4 sm:py-3"
             >
-              <span className="font-pixel text-muted-foreground shrink-0 text-[10px] tracking-[0.15em] uppercase sm:text-[11px]">
+              <span className="text-muted-foreground shrink-0 text-[10px] tracking-[0.15em] uppercase sm:text-[11px]">
                 {row.label}
               </span>
               <span className="text-foreground min-w-0 truncate text-right text-xs font-medium sm:text-sm">

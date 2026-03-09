@@ -137,7 +137,7 @@ export function ModelSelectionForm({
                 <div className="space-y-1">
                   <Label
                     htmlFor="mainEditor"
-                    className="font-pixel text-muted-foreground/90 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]"
+                    className="text-muted-foreground/90 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]"
                   >
                     Main editor
                   </Label>
@@ -218,7 +218,7 @@ export function ModelSelectionForm({
                         <div className="space-y-1">
                           <Label
                             htmlFor={slot.id}
-                            className="font-pixel text-muted-foreground/90 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]"
+                            className="text-muted-foreground/90 text-[10px] tracking-[0.12em] uppercase sm:text-[11px] sm:tracking-[0.14em]"
                           >
                             {slot.label}
                           </Label>
