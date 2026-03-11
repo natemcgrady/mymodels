@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 import {
   getPublicProfileWithSelectionsByUsername,
   type PublicProfileWithSelections,
 } from '@/server/data/profiles'
+import { NextRequest, NextResponse } from 'next/server'
 
 const USERNAME_PATTERN = /^[a-z0-9-]+$/
 const USERNAME_MAX_LENGTH = 40
@@ -50,7 +51,18 @@ function pickFields(
   return result
 }
 
+function getClientIdentifier(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) return forwarded.split(',')[0]?.trim() ?? 'anonymous'
+  return request.headers.get('x-real-ip') ?? 'anonymous'
+}
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ username: string }> }) {
+  const { success } = await checkRateLimit(getClientIdentifier(request))
+  if (!success) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const { username: rawUsername } = await params
   const username = parseUsername(rawUsername ?? '')
   if (!username) {
