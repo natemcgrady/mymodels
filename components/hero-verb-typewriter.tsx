@@ -6,7 +6,7 @@ import { GeistPixelSquare } from 'geist/font/pixel'
 export function HeroVerbTypewriter() {
   return (
     <span
-      className={`${GeistPixelSquare.variable} font-pixel inline-flex min-w-[5ch] justify-start`}
+      className={`${GeistPixelSquare.variable} font-pixel inline-flex w-[6ch] justify-start whitespace-nowrap`}
     >
       <Typewriter
         options={{
