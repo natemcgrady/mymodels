@@ -7,6 +7,7 @@ import { and, eq, inArray } from 'drizzle-orm'
 const USERNAME_MAX_LENGTH = 40
 const USERNAME_SUFFIX_LIMIT = 100
 const PROFILE_EDITOR_VALUE_SET = new Set<string>(PROFILE_EDITOR_VALUES)
+const RESERVED_USERNAMES = new Set(['api', 'auth', 'opengraph-image'])
 
 export function getUsernameHintFromMetadata(
   metadata: Record<string, unknown> | null
@@ -38,12 +39,16 @@ async function isUsernameTaken(username: string) {
   return Boolean(existing)
 }
 
+function isReservedUsername(username: string) {
+  return RESERVED_USERNAMES.has(username)
+}
+
 async function generateAvailableUsername(base: string, userId: string) {
   const normalizedBase = normalizeUsername(base) ?? `user-${userId.slice(0, 8)}`
   let candidate = normalizedBase
   let suffix = 0
 
-  while (await isUsernameTaken(candidate)) {
+  while (isReservedUsername(candidate) || (await isUsernameTaken(candidate))) {
     suffix += 1
     if (suffix > USERNAME_SUFFIX_LIMIT) {
       candidate = `${normalizedBase}-${Math.random().toString(36).slice(2, 6)}`
