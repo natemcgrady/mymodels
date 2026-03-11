@@ -159,6 +159,22 @@ export async function getProfileByUsername(username: string) {
   return enrichProfile(row)
 }
 
+export type PublicProfileModel = {
+  id: number
+  provider: string
+  name: string
+}
+
+export type PublicProfileWithSelections = {
+  username: string
+  displayName: string
+  image: string | null
+  githubUrl: string | null
+  twitterUrl: string | null
+  mainEditor: ProfileEditor | null
+  selections: Record<ProfileSlot, PublicProfileModel | null>
+}
+
 export async function getAllProfileUsernames() {
   const rows = await db.select({ username: profiles.username }).from(profiles)
   return rows.map((row) => row.username)
@@ -181,6 +197,33 @@ export async function getProfileSelections(profileId: number) {
     },
     createProfileSlotRecord(() => null)
   )
+}
+
+export async function getPublicProfileWithSelectionsByUsername(
+  username: string
+): Promise<PublicProfileWithSelections | null> {
+  const profile = await getProfileByUsername(username)
+  if (!profile) return null
+
+  const selections = await getProfileSelections(profile.id)
+
+  return {
+    username: profile.username,
+    displayName: profile.displayName,
+    image: profile.image,
+    githubUrl: profile.githubUrl,
+    twitterUrl: profile.twitterUrl,
+    mainEditor: profile.mainEditor,
+    selections: createProfileSlotRecord((slot) => {
+      const model = selections[slot]
+      if (!model) return null
+      return {
+        id: model.id,
+        provider: model.provider,
+        name: model.name,
+      }
+    }),
+  }
 }
 
 export async function upsertProfileSelections({
