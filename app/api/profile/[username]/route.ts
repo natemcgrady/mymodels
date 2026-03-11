@@ -1,4 +1,6 @@
 import { checkRateLimit } from '@/lib/rate-limit'
+import { LEGACY_API_DEPRECATION_HEADERS } from '@/lib/api-deprecation'
+import { PROFILE_SLOT_VALUES, type ProfileSlot } from '@/lib/profile-slots'
 import {
   getPublicProfileWithSelectionsByUsername,
   type PublicProfileWithSelections,
@@ -7,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const USERNAME_PATTERN = /^[a-z0-9-]+$/
 const USERNAME_MAX_LENGTH = 40
+const ALLOWED_SLOTS = new Set<ProfileSlot>(PROFILE_SLOT_VALUES)
 
 const ALLOWED_FIELDS = new Set<keyof PublicProfileWithSelections>([
   'username',
@@ -39,6 +42,45 @@ function parseFields(param: string | null): (keyof PublicProfileWithSelections)[
   return valid.length > 0 ? valid : null
 }
 
+function parseSlots(param: string | null): ProfileSlot[] | null {
+  if (!param) return null
+
+  const requested = param
+    .split(',')
+    .map((slot) => slot.trim().toLowerCase())
+    .filter(Boolean)
+  if (requested.length === 0) return null
+
+  const uniqueValidSlots: ProfileSlot[] = []
+  const seen = new Set<ProfileSlot>()
+  for (const slot of requested) {
+    if (!ALLOWED_SLOTS.has(slot as ProfileSlot)) continue
+    const typedSlot = slot as ProfileSlot
+    if (seen.has(typedSlot)) continue
+    seen.add(typedSlot)
+    uniqueValidSlots.push(typedSlot)
+  }
+
+  return uniqueValidSlots.length > 0 ? uniqueValidSlots : null
+}
+
+function pickSelectionSlots(
+  profile: PublicProfileWithSelections,
+  slots: ProfileSlot[] | null
+): PublicProfileWithSelections {
+  if (!slots) return profile
+
+  const selections = slots.reduce<Partial<PublicProfileWithSelections['selections']>>((acc, slot) => {
+    acc[slot] = profile.selections[slot]
+    return acc
+  }, {})
+
+  return {
+    ...profile,
+    selections: selections as PublicProfileWithSelections['selections'],
+  }
+}
+
 function pickFields(
   profile: PublicProfileWithSelections,
   fields: (keyof PublicProfileWithSelections)[] | null
@@ -60,24 +102,35 @@ function getClientIdentifier(request: NextRequest): string {
 export async function GET(request: NextRequest, { params }: { params: Promise<{ username: string }> }) {
   const { success } = await checkRateLimit(getClientIdentifier(request))
   if (!success) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: LEGACY_API_DEPRECATION_HEADERS }
+    )
   }
 
   const { username: rawUsername } = await params
   const username = parseUsername(rawUsername ?? '')
   if (!username) {
-    return NextResponse.json({ error: 'Invalid username' }, { status: 400 })
+    return NextResponse.json(
+      { error: 'Invalid username' },
+      { status: 400, headers: LEGACY_API_DEPRECATION_HEADERS }
+    )
   }
 
   const profile = await getPublicProfileWithSelectionsByUsername(username)
   if (!profile) {
-    return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+    return NextResponse.json(
+      { error: 'Profile not found' },
+      { status: 404, headers: LEGACY_API_DEPRECATION_HEADERS }
+    )
   }
 
+  const slots = parseSlots(request.nextUrl.searchParams.get('slots'))
   const fields = parseFields(request.nextUrl.searchParams.get('fields'))
-  return NextResponse.json(pickFields(profile, fields), {
+  return NextResponse.json(pickFields(pickSelectionSlots(profile, slots), fields), {
     headers: {
       'Cache-Control': 'public, max-age=60, stale-while-revalidate=600',
+      ...LEGACY_API_DEPRECATION_HEADERS,
     },
   })
 }

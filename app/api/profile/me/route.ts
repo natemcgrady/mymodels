@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { LEGACY_API_DEPRECATION_HEADERS } from '@/lib/api-deprecation'
 import { createProfileSlotRecord } from '@/lib/profile-slots'
 import { createClient } from '@/lib/supabase/server'
 import { getProfileByUserId, getProfileSelections } from '@/server/data/profiles'
@@ -9,7 +10,10 @@ export async function GET() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401, headers: LEGACY_API_DEPRECATION_HEADERS }
+    )
   }
 
   const profile = await getProfileByUserId(user.id)
@@ -31,6 +35,7 @@ export async function GET() {
       headers: {
         // This endpoint is user-specific; allow short-lived browser caching.
         'Cache-Control': 'private, max-age=60, stale-while-revalidate=600',
+        ...LEGACY_API_DEPRECATION_HEADERS,
       },
     }
   )

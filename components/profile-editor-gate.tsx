@@ -21,15 +21,18 @@ type ProfileEditorGateProps = {
 }
 
 type CatalogModel = {
-  id: number
+  id: string
   provider: string
-  name: string
+  slug: string
+  displayName: string
 }
 
-type EditorDataResponse = {
-  canEdit: boolean
-  catalog: CatalogModel[]
-  mainEditor: ProfileEditor | null
+type EditorContextResponse = {
+  data: {
+    canEdit: boolean
+    catalog: CatalogModel[]
+    mainEditor: ProfileEditor | null
+  }
 }
 
 const initialSelectionsKey = (s: ProfileEditorGateProps['initialSelections']) =>
@@ -45,11 +48,11 @@ export function ProfileEditorGate({
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ['profile', 'editor-data', username],
     queryFn: async () => {
-      const response = await fetch(`/api/profile/editor?username=${encodeURIComponent(username)}`)
+      const response = await fetch(`/api/v1/profiles/${encodeURIComponent(username)}/editorContext`)
       if (!response.ok) {
         throw new Error('Could not load editor data')
       }
-      return (await response.json()) as EditorDataResponse
+      return (await response.json()) as EditorContextResponse
     },
     staleTime: 1000 * 60 * 5,
   })
@@ -86,7 +89,7 @@ export function ProfileEditorGate({
     )
   }
 
-  if (!data?.canEdit) {
+  if (!data?.data.canEdit) {
     return (
       <div className="border-border/70 bg-background/70 border px-3 py-3 sm:px-4">
         <p className="text-muted-foreground text-xs sm:text-sm">
@@ -97,17 +100,25 @@ export function ProfileEditorGate({
   }
 
   const resolvedMainEditor =
-    typeof data.mainEditor === 'string'
-      ? data.mainEditor
-      : data.mainEditor === null
+    typeof data.data.mainEditor === 'string'
+      ? data.data.mainEditor
+      : data.data.mainEditor === null
         ? null
         : initialMainEditor
+
+  const catalog = data.data.catalog
+    .map((model) => ({
+      id: Number(model.id),
+      provider: model.provider,
+      name: model.displayName,
+    }))
+    .filter((model) => Number.isFinite(model.id))
 
   return (
     <ModelSelectionForm
       key={`${initialSelectionsKey(initialSelections)}-${resolvedMainEditor ?? ''}`}
       username={username}
-      catalog={data.catalog}
+      catalog={catalog}
       initialSelections={initialSelections}
       initialMainEditor={resolvedMainEditor}
       onSave={onSave}

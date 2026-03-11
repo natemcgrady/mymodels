@@ -1,0 +1,436 @@
+openapi: 3.1.0
+info:
+  title: MyModels API
+  version: 2.0.0
+  description: Resource-oriented v1 API with stable response envelopes.
+servers:
+  - url: https://www.mymodels.dev
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+tags:
+  - name: Models
+  - name: Profiles
+paths:
+  /api/v1/models:
+    get:
+      tags: [Models]
+      summary: List available models
+      operationId: listModels
+      responses:
+        '200':
+          description: Model catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelListResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/me/profile:
+    get:
+      tags: [Profiles]
+      summary: Get authenticated user profile
+      operationId: getMyProfile
+      security:
+        - SupabaseSession: []
+      responses:
+        '200':
+          description: Current authenticated profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/profiles/{username}:
+    get:
+      tags: [Profiles]
+      summary: Get public profile
+      operationId: getProfileByUsername
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]{1,40}$'
+        - in: query
+          name: slot
+          required: false
+          style: form
+          explode: true
+          description: Filter focus slots while preserving stable selection keys.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProfileSlot'
+          example: [general, plan]
+      responses:
+        '200':
+          description: Public profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/profiles/{username}/permissions:
+    get:
+      tags: [Profiles]
+      summary: Get profile edit permission state
+      operationId: getProfilePermissions
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]{1,40}$'
+      responses:
+        '200':
+          description: Permission response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionResponse'
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/profiles/{username}/editorContext:
+    get:
+      tags: [Profiles]
+      summary: Get editor bootstrap context for profile
+      operationId: getProfileEditorContext
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]{1,40}$'
+      responses:
+        '200':
+          description: Editor context response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EditorContextResponse'
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/profiles/{username}/favorite:
+    get:
+      tags: [Profiles]
+      summary: Get profile favorite (overall) model name
+      operationId: getProfileFavorite
+      description: Returns only the display name of the user's general (everyday) model, or null if unset.
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]{1,40}$'
+      responses:
+        '200':
+          description: Favorite model display name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteResponse'
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+components:
+  securitySchemes:
+    SupabaseSession:
+      type: apiKey
+      in: cookie
+      name: sb-access-token
+      description: Supabase session cookie (name can vary by environment).
+  schemas:
+    ProfileSlot:
+      type: string
+      enum:
+        - general
+        - plan
+        - build
+        - debug
+        - imageGeneration
+        - videoGeneration
+        - creativeWriting
+        - audio
+
+    ProfileEditor:
+      type: [string, 'null']
+      enum:
+        - cursor
+        - neovim
+        - opencode
+        - vscode
+        - jetbrains
+        - vim
+        - notepad++
+        - null
+
+    ModelSummary:
+      type: object
+      additionalProperties: false
+      required: [id, provider, slug, displayName]
+      properties:
+        id:
+          type: string
+        provider:
+          type: string
+        slug:
+          type: string
+        displayName:
+          type: string
+
+    NullableModelSummary:
+      type: [object, 'null']
+      additionalProperties: false
+      required: [id, provider, slug, displayName]
+      properties:
+        id:
+          type: string
+        provider:
+          type: string
+        slug:
+          type: string
+        displayName:
+          type: string
+
+    ProfileSelections:
+      type: object
+      additionalProperties: false
+      required:
+        - general
+        - plan
+        - build
+        - debug
+        - imageGeneration
+        - videoGeneration
+        - creativeWriting
+        - audio
+      properties:
+        general:
+          $ref: '#/components/schemas/NullableModelSummary'
+        plan:
+          $ref: '#/components/schemas/NullableModelSummary'
+        build:
+          $ref: '#/components/schemas/NullableModelSummary'
+        debug:
+          $ref: '#/components/schemas/NullableModelSummary'
+        imageGeneration:
+          $ref: '#/components/schemas/NullableModelSummary'
+        videoGeneration:
+          $ref: '#/components/schemas/NullableModelSummary'
+        creativeWriting:
+          $ref: '#/components/schemas/NullableModelSummary'
+        audio:
+          $ref: '#/components/schemas/NullableModelSummary'
+
+    Profile:
+      type: object
+      additionalProperties: false
+      required:
+        - username
+        - displayName
+        - imageUrl
+        - githubUrl
+        - twitterUrl
+        - mainEditor
+        - selections
+      properties:
+        username:
+          type: [string, 'null']
+          pattern: '^[a-z0-9-]{1,40}$'
+        displayName:
+          type: [string, 'null']
+        imageUrl:
+          type: [string, 'null']
+          format: uri
+        githubUrl:
+          type: [string, 'null']
+          format: uri
+        twitterUrl:
+          type: [string, 'null']
+          format: uri
+        mainEditor:
+          $ref: '#/components/schemas/ProfileEditor'
+        selections:
+          $ref: '#/components/schemas/ProfileSelections'
+
+    Permission:
+      type: object
+      additionalProperties: false
+      required: [canEdit, mainEditor]
+      properties:
+        canEdit:
+          type: boolean
+        mainEditor:
+          $ref: '#/components/schemas/ProfileEditor'
+
+    EditorContext:
+      type: object
+      additionalProperties: false
+      required: [canEdit, mainEditor, catalog]
+      properties:
+        canEdit:
+          type: boolean
+        mainEditor:
+          $ref: '#/components/schemas/ProfileEditor'
+        catalog:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelSummary'
+
+    Meta:
+      type: object
+      additionalProperties: false
+      properties:
+        nextCursor:
+          type: [string, 'null']
+
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message, details]
+      properties:
+        code:
+          type: string
+          enum:
+            - unauthorized
+            - not_found
+            - invalid_parameter
+            - rate_limited
+            - forbidden
+            - internal_error
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+
+    ProfileResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Profile'
+
+    ModelListResponse:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelSummary'
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    PermissionResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Permission'
+
+    EditorContextResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/EditorContext'
+
+    FavoriteResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: [string, 'null']
+          description: Display name of the profile's general (favorite overall) model, or null.

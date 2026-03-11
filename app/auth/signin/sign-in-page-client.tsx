@@ -7,7 +7,9 @@ import { useQuery } from '@tanstack/react-query'
 import { SignInWithGitHub, SignInWithX } from './sign-in-providers'
 
 type MeResponse = {
-  username: string | null
+  data: {
+    username: string | null
+  }
 }
 
 export function SignInPageClient() {
@@ -15,8 +17,8 @@ export function SignInPageClient() {
   const { data: me, isFetched } = useQuery({
     queryKey: ['profile', 'me', 'signin'],
     queryFn: async () => {
-      const response = await fetch('/api/profile/me')
-      if (!response.ok) return { username: null } satisfies MeResponse
+      const response = await fetch('/api/v1/me/profile')
+      if (!response.ok) return { data: { username: null } } satisfies MeResponse
       return (await response.json()) as MeResponse
     },
     staleTime: 1000 * 60 * 5,
@@ -24,9 +26,9 @@ export function SignInPageClient() {
 
   useEffect(() => {
     if (!isFetched) return
-    if (!me?.username) return
-    router.replace(`/${me.username}`)
-  }, [isFetched, me?.username, router])
+    if (!me?.data?.username) return
+    router.replace(`/${me.data.username}`)
+  }, [isFetched, me?.data?.username, router])
 
   return (
     <main

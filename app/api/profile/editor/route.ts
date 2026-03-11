@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { LEGACY_API_DEPRECATION_HEADERS } from '@/lib/api-deprecation'
 import { createClient } from '@/lib/supabase/server'
 import { getModelCatalog } from '@/server/data/model-catalog'
 import { getProfileByUsername } from '@/server/data/profiles'
@@ -6,7 +7,10 @@ import { getProfileByUsername } from '@/server/data/profiles'
 export async function GET(request: NextRequest) {
   const username = request.nextUrl.searchParams.get('username')?.trim() ?? ''
   if (!username) {
-    return NextResponse.json({ canEdit: false, catalog: [], mainEditor: null }, { status: 400 })
+    return NextResponse.json(
+      { canEdit: false, catalog: [], mainEditor: null },
+      { status: 400, headers: LEGACY_API_DEPRECATION_HEADERS }
+    )
   }
 
   const supabase = await createClient()
@@ -15,12 +19,18 @@ export async function GET(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (!user?.id) {
-    return NextResponse.json({ canEdit: false, catalog: [], mainEditor: null })
+    return NextResponse.json(
+      { canEdit: false, catalog: [], mainEditor: null },
+      { headers: LEGACY_API_DEPRECATION_HEADERS }
+    )
   }
 
   const profile = await getProfileByUsername(username)
   if (!profile || profile.userId !== user.id) {
-    return NextResponse.json({ canEdit: false, catalog: [], mainEditor: null })
+    return NextResponse.json(
+      { canEdit: false, catalog: [], mainEditor: null },
+      { headers: LEGACY_API_DEPRECATION_HEADERS }
+    )
   }
 
   const catalog = await getModelCatalog()
@@ -29,6 +39,7 @@ export async function GET(request: NextRequest) {
     {
       headers: {
         'Cache-Control': 'private, max-age=60, stale-while-revalidate=600',
+        ...LEGACY_API_DEPRECATION_HEADERS,
       },
     }
   )

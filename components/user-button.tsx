@@ -19,6 +19,16 @@ type UserButtonProps = {
   initialUser?: InitialUser | null
 }
 
+type MeProfile = {
+  username: string | null
+  displayName: string | null
+  imageUrl: string | null
+}
+
+type MeProfileResponse = {
+  data: MeProfile
+}
+
 const PROFILE_QUERY_KEY = ['profile', 'me', 'header'] as const
 
 export function UserButton({ initialUser = null }: UserButtonProps) {
@@ -33,23 +43,21 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
     queryKey: PROFILE_QUERY_KEY,
     initialData: initialUser
       ? {
-          username: initialUser.username,
-          displayName: initialUser.displayName,
-          image: initialUser.avatarUrl,
+          data: {
+            username: initialUser.username,
+            displayName: initialUser.displayName,
+            imageUrl: initialUser.avatarUrl,
+          },
         }
       : undefined,
     queryFn: async () => {
-      const response = await fetch('/api/profile/me', {
+      const response = await fetch('/api/v1/me/profile', {
         cache: 'no-store',
       })
       if (!response.ok) {
         return null
       }
-      return (await response.json()) as {
-        username: string | null
-        displayName: string | null
-        image: string | null
-      }
+      return (await response.json()) as MeProfileResponse
     },
     staleTime: 1000 * 60,
     refetchOnMount: 'always',
@@ -107,7 +115,9 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
     router.push('/auth/signin')
   }, [router])
 
-  if (!profile?.username) {
+  const resolvedProfile = profile?.data ?? null
+
+  if (!resolvedProfile?.username) {
     return (
       <button
         onClick={signIn}
@@ -119,8 +129,8 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
   }
 
   const displayName =
-    profile.displayName ?? initialUser?.displayName ?? initialUser?.email ?? 'Signed in'
-  const avatarUrl = profile?.image ?? null
+    resolvedProfile.displayName ?? initialUser?.displayName ?? initialUser?.email ?? 'Signed in'
+  const avatarUrl = resolvedProfile?.imageUrl ?? null
 
   return (
     <div ref={menuRef} className="relative">
@@ -155,7 +165,7 @@ export function UserButton({ initialUser = null }: UserButtonProps) {
           className="border-border bg-card absolute right-0 z-20 mt-2 flex w-40 flex-col gap-1 overflow-y-auto overscroll-contain border p-1 shadow-lg"
         >
           <Link
-            href={`/${profile.username}`}
+            href={`/${resolvedProfile.username}`}
             onClick={() => setOpen(false)}
             className="text-foreground hover:bg-muted px-3 py-2 text-sm transition"
             role="menuitem"

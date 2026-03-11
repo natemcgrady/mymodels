@@ -40,16 +40,18 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
   const { data: editorPermission } = useQuery({
     queryKey: ['profile', 'editor-data', profile.username],
     queryFn: async () => {
-      const response = await fetch(`/api/profile/editor?username=${encodeURIComponent(profile.username)}`)
+      const response = await fetch(
+        `/api/v1/profiles/${encodeURIComponent(profile.username)}/permissions`
+      )
       if (!response.ok) {
         throw new Error('Could not load editor data')
       }
-      return (await response.json()) as { canEdit?: boolean }
+      return (await response.json()) as { data?: { canEdit?: boolean } }
     },
     enabled: Boolean(modelEditor),
     staleTime: 1000 * 60 * 5,
   })
-  const canEditProfile = Boolean(modelEditor && editorPermission?.canEdit)
+  const canEditProfile = Boolean(modelEditor && editorPermission?.data?.canEdit)
   const populatedModelSlots = modelSlots.filter(
     (slot): slot is ModelSlot & { model: NonNullable<ModelSlot['model']> } => Boolean(slot.model)
   )
