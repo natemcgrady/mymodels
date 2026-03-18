@@ -147,25 +147,37 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
           {avatarSource ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarSource}
-              alt={displayName}
-              width={avatarSize}
-              height={avatarSize}
+            <div
               style={{
                 width: avatarSize,
                 height: avatarSize,
-                objectFit: 'cover',
                 border: `1px solid ${palette.border}`,
+                borderRadius: '9999px',
+                overflow: 'hidden',
+                display: 'flex',
               }}
-            />
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarSource}
+                alt={displayName}
+                width={avatarSize}
+                height={avatarSize}
+                style={{
+                  width: avatarSize,
+                  height: avatarSize,
+                  objectFit: 'cover',
+                }}
+              />
+            </div>
           ) : (
             <div
               style={{
                 width: avatarSize,
                 height: avatarSize,
                 border: `1px solid ${palette.border}`,
+                borderRadius: '9999px',
+                overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
