@@ -46,7 +46,7 @@ export function ProfileEditorGate({
   onCancel,
 }: ProfileEditorGateProps) {
   const { data, isPending, isError, refetch } = useQuery({
-    queryKey: ['profile', 'editor-data', username],
+    queryKey: ['profile', 'editor-context', username],
     queryFn: async () => {
       const response = await fetch(`/api/v1/profiles/${encodeURIComponent(username)}/editorContext`)
       if (!response.ok) {
@@ -106,7 +106,7 @@ export function ProfileEditorGate({
         ? null
         : initialMainEditor
 
-  const catalog = data.data.catalog
+  const catalog = (data.data.catalog ?? [])
     .map((model) => ({
       id: Number(model.id),
       provider: model.provider,

@@ -38,7 +38,7 @@ export function ProfileCard({ profile, modelSlots, modelEditor }: ProfileCardPro
   const [isEditing, setIsEditing] = useState(false)
   const { resolvedTheme } = useTheme()
   const { data: editorPermission } = useQuery({
-    queryKey: ['profile', 'editor-data', profile.username],
+    queryKey: ['profile', 'editor-permissions', profile.username],
     queryFn: async () => {
       const response = await fetch(
         `/api/v1/profiles/${encodeURIComponent(profile.username)}/permissions`
